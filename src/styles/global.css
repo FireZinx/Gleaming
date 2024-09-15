@@ -106,6 +106,24 @@ a {
   }
 }
 
+@media (max-width: 1080px) {
+  html {
+      font-size: 75%;
+  }
+}
+
+@media (max-width: 720px) {
+  html {
+      font-size: 50%;
+  }
+}
+
+@media (max-width: 420px) {
+  html {
+      font-size: 50%;
+  }
+}
+
 html,
 body,
 body > div:first-child,
