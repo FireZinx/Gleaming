@@ -11,11 +11,11 @@ class fastLed:
 
         self.client = client
 
-        self.sendBytes([0, 255])
+        self.sendBytes([0, 155])
 
         cmd = []
-        for i in range(255):
-            cmd.extend([i, 255, 155, 75])
+        for i in range(155):
+            cmd.extend([i, 255, 0, 0])
 
         time.sleep(1)
 

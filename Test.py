@@ -40,26 +40,33 @@ def getScreenColor():
         print(f"client connected: {addr}")
 
         while True:
-            data = client.recv(16)
+            try:
+                data = client.recv(16)
+                startTime = time.time()
 
-            if data:
-                screen = ImageGrab.grab()
-                downscale = screen.resize((24, 24), resample=Image.Resampling.BILINEAR)
-                screen_downscale = downscale.resize(screen.size, Image.Resampling.NEAREST)
-                screen_saturation = ImageEnhance.Color(screen_downscale).enhance(2)
+                if data:
+                    screen = ImageGrab.grab()
+                    downscale = screen.resize((24, 24), resample=Image.Resampling.BILINEAR)
+                    screen_downscale = downscale.resize(screen.size, Image.Resampling.NEAREST)
+                    screen_saturation = ImageEnhance.Color(screen_downscale).enhance(2)
 
-                left = screen_saturation.crop(getPos(size, int(width * 0.2), int(height * 0.3)))
-                center = screen_saturation.crop(getPos(size, int(width * 0.5), int(height * 0.3)))
-                right = screen_saturation.crop(getPos(size, int(width * 0.8), int(height * 0.3)))
+                    left = screen_saturation.crop(getPos(size, int(width * 0.2), int(height * 0.3)))
+                    center = screen_saturation.crop(getPos(size, int(width * 0.5), int(height * 0.3)))
+                    right = screen_saturation.crop(getPos(size, int(width * 0.8), int(height * 0.3)))
 
-                allColors = colors([right, center, left])
+                    allColors = colors([right, center, left])
 
-                try:
                     sent_bytes = client.send(bytes([len(allColors), *allColors]))
-                    if sent_bytes == 0:
-                        raise Exception("Disconnected")
-                except:
-                    print("client disconnected")
-                    break
 
+                    try:
+                        response = client.recv(16)
+                    except:
+                        print("lost connection")
+                        continue
+                    
+                    #print(f"data2: {response.decode()}, time: {1.0 / (time.time() - startTime)}") 
+               
+            except:
+                break
+                        
 getScreenColor()
