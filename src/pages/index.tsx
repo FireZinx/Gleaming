@@ -1,17 +1,13 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Crushed, Inter, Vampiro_One } from "next/font/google";
 import styles from "../styles/Home.module.css";
-import { useFrame, useLoader, useGraph, useThree, extend} from '@react-three/fiber'
-import { SoftShadows, Environment, Reflector, useGLTF, RandomizedLight, SpotLight, Stats, useTexture, Lightformer, MeshTransmissionMaterial, MeshReflectorMaterial, useProgress, Html, AccumulativeShadows} from '@react-three/drei'
-import { useEffect, Suspense, useRef, useState, forwardRef, use, useContext, useMemo} from "react"
-import { Vector3, Camera, WebGLCubeRenderTarget, DoubleSide, MathUtils, PerspectiveCamera, FrontSide, CatmullRomCurve3, Vector4} from "three";
+import { useFrame, useThree} from '@react-three/fiber'
+import {Reflector, useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows} from '@react-three/drei'
+import { useEffect, Suspense, useRef, useState, forwardRef, useContext} from "react"
+import { Vector3, DoubleSide, MathUtils, PerspectiveCamera, CatmullRomCurve3, Vector4} from "three";
 import {Bloom, EffectComposer, GodRays, SMAA} from "@react-three/postprocessing";
 import {KernelSize, Pass, Resolution} from "postprocessing" 
 import { ButtonContext } from "../components/DataContext";
+import BedRoomMesh  from "../models/bedrooms"
 import * as THREE from 'three'
-import { copyFileSync } from "fs";
-import { constrainedMemory } from "process";
 
 function Windows(props) {
   const Window = useGLTF("Window.glb")
@@ -28,13 +24,13 @@ function Windows(props) {
   return(
     <group {...props} dispose={null}>
       <group position={[0, 0.01, -0.027]} scale={[1.4, 1.4, 1.408]}>
-        <mesh castShadow receiveShadow geometry={Window.nodes.Cube005.geometry}>
+        <mesh  geometry={Window.nodes.Cube005.geometry}>
           <meshPhysicalMaterial map={texture} side={DoubleSide}/>
         </mesh>
       </group>
 
       <group>
-        <mesh castShadow receiveShadow geometry={Glass.nodes.Plane006.geometry} position={[-0.26, 0.12, 4.024]} scale={[1.4, 1.1, 1.1]} rotation={[0, -  Math.PI/2,Math.PI / 2]}>
+        <mesh  geometry={Glass.nodes.Plane006.geometry} position={[-0.26, 0.12, 4.024]} scale={[1.4, 1.1, 1.1]} rotation={[0, -  Math.PI/2,Math.PI / 2]}>
           <MeshTransmissionMaterial thickness={0.01}  resolution={1024} ior={1.25} roughness={0.09} transmission={0.95} clearcoat={1} clearcoatRoughness={0} transparent={false}/>
         </mesh>
       </group>
@@ -51,7 +47,7 @@ function Roof(props){
 
   return(
     <group {...props} ref={props.pos} scale={1.4}>
-      <mesh castShadow receiveShadow geometry={nodes.Plane001.geometry}>
+      <mesh geometry={nodes.Plane001.geometry}>
         <meshPhysicalMaterial map={texture}/>
       </mesh> 
     </group>
@@ -73,7 +69,7 @@ function Floor(props) {
 
   return (
     <group {...props} position={[0, 0.01, 0]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
-      <mesh castShadow receiveShadow geometry={floor.nodes.Plane003.geometry}>
+      <mesh geometry={floor.nodes.Plane003.geometry}>
         <MeshReflectorMaterial
           side={DoubleSide}
           blur={[1600, 800]}
@@ -104,7 +100,7 @@ function Walls(props) {
   return (
     <>
       <group {...props} scale={[1.4, 1.4, 1.4]}>
-        <mesh castShadow receiveShadow geometry={nodes.Plane002.geometry} >
+        <mesh geometry={nodes.Plane002.geometry} >
           <meshPhysicalMaterial side={DoubleSide} map={texture} roughness={0.95}/>
         </mesh>
       </group>
@@ -167,62 +163,62 @@ function Furniture(props) {
   return(
     <>
       <group scale={[1.225, 1.3, 1.5]} position={[1.375, 0.7, 2.875]}>
-        <mesh castShadow receiveShadow geometry={sofa.nodes.under_part.geometry}>
+        <mesh geometry={sofa.nodes.under_part.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={sofa_map}/>       
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={outdoorcouch.nodes.couch.geometry}>
+        <mesh geometry={outdoorcouch.nodes.couch.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={outdoorcouch_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={[1.4, 1.4, 1.4]}>
-        <mesh castShadow receiveShadow geometry={chair.nodes.Leme_chair002.geometry}>
+        <mesh geometry={chair.nodes.Leme_chair002.geometry}>
           <meshPhysicalMaterial map={chair_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={[1.4, 1.4, 1.4]}>
-        <mesh castShadow receiveShadow geometry={table.nodes.Table.geometry}>
+        <mesh geometry={table.nodes.Table.geometry}>
           <meshPhysicalMaterial map={table_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={kitchen.nodes.kitchen.geometry}>
+        <mesh geometry={kitchen.nodes.kitchen.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={kitchen_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={fridge.nodes.Circle.geometry}>
+        <mesh geometry={fridge.nodes.Circle.geometry}>
           <meshPhysicalMaterial map={fridge_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} rotation={[0, 0, Math.PI / 2]} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={tvstand.nodes.Cube010.geometry}>
+        <mesh geometry={tvstand.nodes.Cube010.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={tvstand_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={fence.nodes.Cube011.geometry}>
+        <mesh geometry={fence.nodes.Cube011.geometry}>
           <meshPhysicalMaterial map={fence_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={woodWall.nodes.Plane005.geometry}>
+        <mesh geometry={woodWall.nodes.Plane005.geometry}>
           <meshPhysicalMaterial map={woodWall_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={frame.nodes.Buffet_bazalt001.geometry}>
+        <mesh geometry={frame.nodes.Buffet_bazalt001.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={frame_map}/>
         </mesh>
       </group>
       <group {...props} position={[0, 0.1225, 0]} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={light.nodes.Cube009.geometry}>
+        <mesh geometry={light.nodes.Cube009.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={light_map}/>
         </mesh>
       </group>
       <group {...props} dispose={null} scale={1.4}>
-        <mesh castShadow receiveShadow geometry={plant.nodes.Plane.geometry}>
+        <mesh geometry={plant.nodes.Plane.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={plant_map}/>
         </mesh>
       </group>
@@ -350,12 +346,13 @@ const cam2 = {
   bedroom: {
     curve: new CatmullRomCurve3([
       new Vector3(3.2, 2.2, 2.8),
-      new Vector3(3, 2.2, 1.3 ),
-      new Vector3(1, 2.2, 1.3)
+      new Vector3(3, 2.2, 1.1 ),
+      new Vector3(2, 2.2, 1.1),
+      new Vector3(2, 2.2, 0.6)
     ]),
     look: new CatmullRomCurve3([
       new Vector3(3.5, 1.3, -2),
-      new Vector3(-2, 1.3, -1),
+      new Vector3(-1, 1.1, -1),
     ]),
     velocity: 0.25
   },
@@ -549,6 +546,9 @@ export default function HomeCanvas() {
         <Walls ios={"true"}/>
         <Windows />
         <Furniture />
+
+        <BedRoomMesh />
+
         <Sky/>
       </Suspense>
     </>
