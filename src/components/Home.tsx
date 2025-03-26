@@ -5,12 +5,6 @@ import { ButtonContext } from "./DataContext"
 
 let sceneContext;
 
-export function ViewMode(props) {
-    sceneContext.buttonProvider(0x03)
-    sceneContext.clickEvent(true)
-    console.log("Clikced!")
-}
-
 export default function Home() {
     const [loaded, setLoaded] = useState(false);
     const [remove, setRemove] = useState(false);
@@ -41,7 +35,7 @@ export default function Home() {
             </div>
                 
             <div className={styles.headerContainer}>
-                <div onClick={ViewMode} className={styles.headerButton}>
+                <div className={styles.headerButton}>
                     Dimensions  
                 </div>
             </div>

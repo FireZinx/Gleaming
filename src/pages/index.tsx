@@ -7,6 +7,7 @@ import {Bloom, EffectComposer, GodRays, SMAA} from "@react-three/postprocessing"
 import {KernelSize, Pass, Resolution} from "postprocessing" 
 import { ButtonContext } from "../components/DataContext";
 import BedRoomMesh  from "../models/bedrooms"
+import Carpet from"../models/carpet"
 import * as THREE from 'three'
 
 function Windows(props) {
@@ -47,7 +48,7 @@ function Roof(props){
 
   return(
     <group {...props} ref={props.pos} scale={1.4}>
-      <mesh geometry={nodes.Plane001.geometry}>
+      <mesh geometry={nodes.Plane010.geometry}>
         <meshPhysicalMaterial map={texture}/>
       </mesh> 
     </group>
@@ -86,13 +87,7 @@ function Floor(props) {
 
 function Walls(props) {
   const { nodes } = useGLTF("untitled.glb")
-  let texture
-
-  if (props.ios) {
-    texture = useTexture("Walls.jpg")
-  }else {
-    texture = useTexture("Walls8k.jpg")
-  }
+  let texture = useTexture("Walls.jpg")
 
   texture.flipY = false
   texture.channel = 1
@@ -192,8 +187,8 @@ function Furniture(props) {
           <meshPhysicalMaterial map={fridge_map}/>
         </mesh>
       </group>
-      <group {...props} dispose={null} rotation={[0, 0, Math.PI / 2]} scale={1.4}>
-        <mesh geometry={tvstand.nodes.Cube010.geometry}>
+      <group {...props} dispose={null} scale={1.4}>
+        <mesh geometry={tvstand.nodes.Cube001.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={tvstand_map}/>
         </mesh>
       </group>
@@ -212,8 +207,8 @@ function Furniture(props) {
           <meshPhysicalMaterial side={DoubleSide} map={frame_map}/>
         </mesh>
       </group>
-      <group {...props} position={[0, 0.1225, 0]} dispose={null} scale={1.4}>
-        <mesh geometry={light.nodes.Cube009.geometry}>
+      <group {...props} position={[0, -0.005, 0]} dispose={null} scale={1.4}>
+        <mesh geometry={light.nodes.Lights002.geometry}>
           <meshPhysicalMaterial side={DoubleSide} map={light_map}/>
         </mesh>
       </group>
@@ -338,7 +333,7 @@ const cam2 = {
       new Vector3(3.2, 2.2, 2.8)
     ]),
     look: new CatmullRomCurve3([
-      new Vector3(0, 1.1, 1),
+      new Vector3(0, 1.1, -2),
       new Vector3(3.5, 1.3, -2),
     ]),
     velocity: 0.25
@@ -413,7 +408,7 @@ const camRoutes = {
   }
 }
 
-export default function HomeCanvas() {
+export default function HomeCanvas(props) {
   const [ios, _] = useState(!window.MSStream && /iPad|iPhone|iPod/.test(navigator.userAgent));
   const { camera } = useThree();
   const [ view, setView ] = useState(null);
@@ -422,6 +417,7 @@ export default function HomeCanvas() {
   const roofDisplacement = useRef(0);
   const interpolation = useRef(0);
   const normalizedX = useRef(0);;
+  const cameraPos = useRef();
   const linearX = useRef(0);
   const animate = useRef(false);
   const result = useRef(0);
@@ -457,18 +453,8 @@ export default function HomeCanvas() {
       return
     }
 
-    if (animate.current || sceneContext.returning.current) {
+    if (sceneContext.returning.current) {
       interpolation.current += delta * cam2[sceneContext.view].velocity
-
-      // if (linearX.current > 0.01) {
-      //   linearX.current -= 0.005
-      //   const centralized = new THREE.Quaternion(0, -linearX.current, 0, 20)
-      //   camera.quaternion.normalize()
-      //   camera.applyQuaternion(centralized)
-      //   console.log(linearX.current)
-  
-      //   return
-      // }
       
       if (interpolation.current > 1) { 
         interpolation.current = 1
@@ -501,6 +487,7 @@ export default function HomeCanvas() {
       const QN = new THREE.Quaternion(0, -resultX, 0, 20)
       camera.applyQuaternion(QN)
       camera.quaternion.normalize()
+    
       linearX.current = normalizedX.current
     }
     
@@ -548,6 +535,7 @@ export default function HomeCanvas() {
         <Furniture />
 
         <BedRoomMesh />
+        <Carpet />
 
         <Sky/>
       </Suspense>
