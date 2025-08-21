@@ -1,14 +1,17 @@
 import styles from "../styles/Home.module.css";
-import { useFrame, useThree} from '@react-three/fiber'
-import {Reflector, useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows} from '@react-three/drei'
-import { useEffect, Suspense, useRef, useState, forwardRef, useContext} from "react"
-import { Vector3, DoubleSide, MathUtils, PerspectiveCamera, CatmullRomCurve3, Vector4} from "three";
-import {Bloom, EffectComposer, GodRays, SMAA} from "@react-three/postprocessing";
-import {KernelSize, Pass, Resolution} from "postprocessing" 
+import { useFrame, useThree } from '@react-three/fiber'
+import { useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows} from '@react-three/drei'
+import { useEffect, Suspense, useRef, useState, forwardRef, useContext } from "react"
+import { Vector3, DoubleSide, MathUtils, PerspectiveCamera, CatmullRomCurve3, Vector4 } from "three";
+import { Bloom, EffectComposer, GodRays, SMAA } from "@react-three/postprocessing";
+import { KernelSize, Pass, Resolution } from "postprocessing" 
 import { ButtonContext } from "../components/DataContext";
+import { ShadersTexture } from "../shaders/shaders"
 import BedRoomMesh  from "../models/bedrooms"
 import Carpet from"../models/carpet"
 import * as THREE from 'three'
+
+
 
 function Windows(props) {
   const Window = useGLTF("Window.glb")
@@ -42,7 +45,7 @@ function Windows(props) {
 function Roof(props){
   const {nodes, materials} = useGLTF("Roof.glb")
   const texture = useTexture("Roof.jpg")
-  const multiply = 1
+
   texture.flipY = false
   texture.channel = 1
 
@@ -56,29 +59,37 @@ function Roof(props){
 }
 
 function Floor(props) {
-  const floor = useGLTF("Floor.glb")
-  let texture
+  const floor = useGLTF("Floor.glb");
+  const floor_text = new THREE.TextureLoader().load("Floor.jpg");
+  const shadow_floor_text = new THREE.TextureLoader().load("FloorShadows.jpg");
 
-  if (props.ios) {
-    texture = useTexture("Floor.jpg")
-  }else {
-    texture = useTexture("Floor8k.jpg")
+  floor_text.flipY = false;
+  floor_text.channel = 1;
+  shadow_floor_text.flipY = false;
+  shadow_floor_text.channel = 1;
+  
+  if (props.customFloorRef.current != null && props.customFloorRef.current.uniforms.ftexture.value == null) {
+    props.customFloorRef.current.uniforms.ftexture.value = floor_text;
+    props.customFloorRef.current.uniforms.stexture.value = shadow_floor_text;
   }
-
-  texture.flipY = false
-  texture.channel = 1
-
+  
   return (
-    <group {...props} position={[0, 0.01, 0]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
+    <group {...props} position={[0, 0.1954, 0]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
       <mesh geometry={floor.nodes.Plane003.geometry}>
+        <ShadersTexture ref={props.customFloorRef} />
+      </mesh>
+
+      <mesh position={[0, 0, 0.00005]} geometry={floor.nodes.Plane003.geometry}>
         <MeshReflectorMaterial
           side={DoubleSide}
           blur={[1600, 800]}
           resolution={512}
-          mirror={0.2}
+          mirror={1}
           mixBlur={0.8}
           mixStrength={1}
-          map={texture}
+          transparent={true}
+          opacity={0.2}
+          color={[0.5, 0.5, 0.5]}
         />
       </mesh>
     </group>
@@ -87,16 +98,27 @@ function Floor(props) {
 
 function Walls(props) {
   const { nodes } = useGLTF("untitled.glb")
-  let texture = useTexture("Walls.jpg")
+  const texture = new THREE.TextureLoader().load("Walls.jpg")
+  const shadow_texture = new THREE.TextureLoader().load("WallsShadow.jpg")
+
+  //customWallRef
 
   texture.flipY = false
   texture.channel = 1
+
+  shadow_texture.flipY = false
+  shadow_texture.channel = 1
+
+  if (props.customWallRef.current != null && props.customWallRef.current.uniforms.ftexture.value == null) {
+    props.customWallRef.current.uniforms.ftexture.value = texture;
+    props.customWallRef.current.uniforms.stexture.value = shadow_texture;
+  }
 
   return (
     <>
       <group {...props} scale={[1.4, 1.4, 1.4]}>
         <mesh geometry={nodes.Plane002.geometry} >
-          <meshPhysicalMaterial side={DoubleSide} map={texture} roughness={0.95}/>
+          <ShadersTexture ref={props.customWallRef} />
         </mesh>
       </group>
     </>
@@ -157,8 +179,8 @@ function Furniture(props) {
 
   return(
     <>
-      <group scale={[1.225, 1.3, 1.5]} position={[1.375, 0.7, 2.875]}>
-        <mesh geometry={sofa.nodes.under_part.geometry}>
+      <group scale={[1.225, 1.3, 1.5]}>
+        <mesh geometry={sofa.nodes.under_part003.geometry} scale={[1.15, 1.08, 0.97]} position={[0, 0, -0.16]}>
           <meshPhysicalMaterial side={DoubleSide} map={sofa_map}/>       
         </mesh>
       </group>
@@ -333,7 +355,7 @@ const cam2 = {
       new Vector3(3.2, 2.2, 2.8)
     ]),
     look: new CatmullRomCurve3([
-      new Vector3(0, 1.1, -2),
+      new Vector3(0, 1.1, 1),
       new Vector3(3.5, 1.3, -2),
     ]),
     velocity: 0.25
@@ -417,10 +439,11 @@ export default function HomeCanvas(props) {
   const roofDisplacement = useRef(0);
   const interpolation = useRef(0);
   const normalizedX = useRef(0);;
-  const cameraPos = useRef();
   const linearX = useRef(0);
+  const count = useRef(0);
   const animate = useRef(false);
-  const result = useRef(0);
+  const floorShadersRef = useRef(null);
+  const wallShadersRef = useRef(null);
   
   const sceneContext = useContext(ButtonContext);
 
@@ -431,7 +454,7 @@ export default function HomeCanvas(props) {
         return
       }
   
-      normalizedX.current = (6 * event.clientX) / window.innerWidth - 3
+        normalizedX.current = (6 * event.clientX) / window.innerWidth - 3
     })
 
     if (sceneContext.view == null ) {
@@ -453,7 +476,12 @@ export default function HomeCanvas(props) {
       return
     }
 
-    if (sceneContext.returning.current) {
+    if (floorShadersRef != null && wallShadersRef != null) {
+      floorShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+      wallShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+    }
+
+    if (animate.current || sceneContext.returning.current) {
       interpolation.current += delta * cam2[sceneContext.view].velocity
       
       if (interpolation.current > 1) { 
@@ -487,7 +515,6 @@ export default function HomeCanvas(props) {
       const QN = new THREE.Quaternion(0, -resultX, 0, 20)
       camera.applyQuaternion(QN)
       camera.quaternion.normalize()
-    
       linearX.current = normalizedX.current
     }
     
@@ -522,15 +549,16 @@ export default function HomeCanvas(props) {
         Bathroom
       </ViewPos>
 
-      <ambientLight intensity={2}/>
+      <ambientLight intensity={3}/>
+
       <AccumulativeShadows resolution={1024} frames={100} color={"black"} alphaTest={0.68} colorBlend={1.5} opacity={1.65} scale={8}>
         <RandomizedLight radius={1.5} ambient={0.7} position={[-20, 4, 0]} bias={0.001} />
       </AccumulativeShadows>
 
       <Suspense fallback={null}>
         <Roof pos={roofDisplacement}/>
-        <Floor ios={"true"}/>
-        <Walls ios={"true"}/>
+        <Floor customFloorRef={floorShadersRef} />
+        <Walls customWallRef={wallShadersRef} ios={"true"}/>
         <Windows />
         <Furniture />
 

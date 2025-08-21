@@ -4,11 +4,13 @@ import { useGLTF, useTexture } from '@react-three/drei'
 export default function BedRoomMesh (props) {
     const bedroom = useGLTF("bedroom.glb");
     const masterBedRoom = useGLTF("masterBedRoom.glb")
+    const pillow = useGLTF("pillow.glb")
     const decoration = useGLTF("decorationRoom.glb")
     const decorationRoom = useGLTF("decoration.glb")
 
     const bedroomTexture = useTexture("bedRoom.jpg")
     const masterTextute = useTexture("masterBedRoom.jpg")
+    const pillowTexture = useTexture("pillow.jpg")
     const decorationRoomTexture = useTexture("decorationRoom.jpg")
     const decorationTexture = useTexture("Decoration.jpg")
 
@@ -16,6 +18,8 @@ export default function BedRoomMesh (props) {
     bedroomTexture.channel = 1
     masterTextute.flipY = false
     masterTextute.channel = 1
+    pillowTexture.flipY = false
+    pillowTexture.channel = 1
     decorationRoomTexture.flipY = false
     decorationRoomTexture.channel = 1
     decorationTexture.flipY = false
@@ -23,12 +27,16 @@ export default function BedRoomMesh (props) {
 
     return(    
         <>      
-            <mesh geometry={bedroom.nodes.Modern_Bed004.geometry} scale={1.4}>
+            <mesh geometry={bedroom.nodes.Modern_Bed006.geometry} scale={1.4}>
                 <meshPhysicalMaterial map={bedroomTexture} side={THREE.DoubleSide}/>
             </mesh>
-            <mesh geometry={masterBedRoom.nodes.body_legs003.geometry} scale={1.4}>
+            <mesh geometry={masterBedRoom.nodes.cover002.geometry} scale={1.4}>
                 <meshPhysicalMaterial map={masterTextute} side={THREE.DoubleSide}/>
             </mesh>
+            <mesh geometry={pillow.nodes.Cube005.geometry} scale={1.4}>
+                <meshPhysicalMaterial map={pillowTexture} side={THREE.DoubleSide}/>
+            </mesh>
+
             <mesh geometry={decoration.nodes.Plane006.geometry} scale={1.4}>
                 <meshPhysicalMaterial map={decorationRoomTexture} side={THREE.DoubleSide}/>
             </mesh>

@@ -15,7 +15,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
@@ -23,8 +24,8 @@
     "**/*.tsx"
   ],
   "dependencies": {
-      "@types/three": "^0.149.0",
-      "three": "^0.150.1" 
+    "@types/three": "^0.149.0",
+    "three": "^0.150.1"
   },
   "exclude": [
     "node_modules"

@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState, createContext, Children, ChildContextProvider, Dispatch, SetStateAction, MutableRefObject} from "react"
-import styles from "../styles/Home.module.css"
-import { DefaultLoadingManager } from "three"
+import {useRef, useState, createContext, MutableRefObject} from "react"
 
 type SceneContextData = {
     view: null | string;
