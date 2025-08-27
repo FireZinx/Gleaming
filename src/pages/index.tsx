@@ -43,16 +43,22 @@ function Windows(props) {
 }
 
 function Roof(props){
-  const {nodes, materials} = useGLTF("Roof.glb")
-  const texture = useTexture("Roof.jpg")
+  const roof = useGLTF("Roof.glb");
+  const texture = new THREE.TextureLoader().load("Roof.jpg");
+  const textureShadow = new THREE.TextureLoader().load("RoofShadow.jpg");
 
   texture.flipY = false
-  texture.channel = 1
+  textureShadow.flipY = false
+
+  if (props.customRoofRef.current != null && props.customRoofRef.current.uniforms.ftexture.value == null) {
+    props.customRoofRef.current.uniforms.ftexture.value = texture;
+    props.customRoofRef.current.uniforms.stexture.value = textureShadow;
+  }
 
   return(
     <group {...props} ref={props.pos} scale={1.4}>
-      <mesh geometry={nodes.Plane010.geometry}>
-        <meshPhysicalMaterial map={texture}/>
+      <mesh geometry={roof.nodes.Plane010.geometry}>
+        <ShadersTexture ref={props.customRoofRef} />
       </mesh> 
     </group>
   )
@@ -60,17 +66,15 @@ function Roof(props){
 
 function Floor(props) {
   const floor = useGLTF("Floor.glb");
-  const floor_text = new THREE.TextureLoader().load("Floor.jpg");
-  const shadow_floor_text = new THREE.TextureLoader().load("FloorShadows.jpg");
+  const texture = new THREE.TextureLoader().load("Floor.jpg");
+  const textureShadow = new THREE.TextureLoader().load("FloorShadows.jpg");
 
-  floor_text.flipY = false;
-  floor_text.channel = 1;
-  shadow_floor_text.flipY = false;
-  shadow_floor_text.channel = 1;
+  texture.flipY = false
+  textureShadow.flipY = false
   
   if (props.customFloorRef.current != null && props.customFloorRef.current.uniforms.ftexture.value == null) {
-    props.customFloorRef.current.uniforms.ftexture.value = floor_text;
-    props.customFloorRef.current.uniforms.stexture.value = shadow_floor_text;
+    props.customFloorRef.current.uniforms.ftexture.value = texture;
+    props.customFloorRef.current.uniforms.stexture.value = textureShadow;
   }
   
   return (
@@ -86,10 +90,10 @@ function Floor(props) {
           resolution={512}
           mirror={1}
           mixBlur={0.8}
-          mixStrength={1}
+          mixStrength={0.5}
           transparent={true}
           opacity={0.2}
-          color={[0.5, 0.5, 0.5]}
+          color={[0.1, 0.1, 0.1]}
         />
       </mesh>
     </group>
@@ -99,19 +103,16 @@ function Floor(props) {
 function Walls(props) {
   const { nodes } = useGLTF("untitled.glb")
   const texture = new THREE.TextureLoader().load("Walls.jpg")
-  const shadow_texture = new THREE.TextureLoader().load("WallsShadow.jpg")
+  const textureShadow = new THREE.TextureLoader().load("WallsShadow.jpg")
 
   //customWallRef
 
   texture.flipY = false
-  texture.channel = 1
-
-  shadow_texture.flipY = false
-  shadow_texture.channel = 1
+  textureShadow.flipY = false
 
   if (props.customWallRef.current != null && props.customWallRef.current.uniforms.ftexture.value == null) {
     props.customWallRef.current.uniforms.ftexture.value = texture;
-    props.customWallRef.current.uniforms.stexture.value = shadow_texture;
+    props.customWallRef.current.uniforms.stexture.value = textureShadow;
   }
 
   return (
@@ -125,118 +126,140 @@ function Walls(props) {
   )
 }
 
-function Furniture(props) {
+function Room(props) {
   const sofa = useGLTF("Sofa.glb")
-  const outdoorcouch = useGLTF("outdoorCouch.glb")
   const chair = useGLTF("Chair.glb")
   const table = useGLTF("Table.glb")
-  const kitchen = useGLTF("kitchen.glb")
-  const fridge = useGLTF("Fridge.glb")
-  const tvstand = useGLTF("tvstand.glb")
-  const fence = useGLTF("Fence.glb")
+  const tvStand = useGLTF("tvstand.glb")
   const woodWall = useGLTF("WoodWall.glb")
   const frame = useGLTF("Frame.glb")
   const light = useGLTF("Lights.glb")
-  const plant = useGLTF("Plants.glb")
 
-  const chair_map = useTexture("Chair.jpg")
-  const sofa_map = useTexture("Sofa.jpg")
-  const outdoorcouch_map = useTexture("outdoorCouch.jpg")
-  const table_map = useTexture("Table.jpg")
-  const kitchen_map = useTexture("kitchen.jpg")
-  const fridge_map = useTexture("Fridge.jpg")
-  const tvstand_map = useTexture("TvStand.jpg")
-  const fence_map = useTexture("Fence.jpg")
-  const woodWall_map = useTexture("WoodWall.jpg")
-  const frame_map = useTexture("Frame.jpg")
-  const light_map = useTexture("Light.jpg")
-  const plant_map = useTexture("Plants.jpg")
+  const sofaTexture = new THREE.TextureLoader().load("Sofa.jpg")
+  const chairTexture = new THREE.TextureLoader().load("Chair.jpg")
+  const tableTexture = new THREE.TextureLoader().load("Table.jpg")
+  const tvStandTexture = new THREE.TextureLoader().load("TvStand.jpg")
+  const woodWallTexture = new THREE.TextureLoader().load("WoodWall.jpg")
+  const frameTexture = new THREE.TextureLoader().load("Frame.jpg")
+  const lightTexture = new THREE.TextureLoader().load("Lights.jpg")
 
-  sofa_map.flipY = false
-  sofa_map.channel = 1
-  outdoorcouch_map.flipY = false
-  outdoorcouch_map.channel = 1
-  chair_map.flipY = false
-  chair_map.channel = 1
-  table_map.flipY = false
-  table_map.channel = 1
-  kitchen_map.flipY = false
-  kitchen_map.channel = 1
-  fridge_map.flipY = false
-  fridge_map.channel = 1
-  tvstand_map.flipY = false
-  tvstand_map.channel = 1
-  fence_map.flipY = false
-  fence_map.channel = 1
-  woodWall_map.flipY = false
-  woodWall_map.channel = 1
-  frame_map.flipY = false
-  frame_map.channel = 1
-  light_map.flipY = false
-  light_map.channel = 1
-  plant_map.flipY = false
-  plant_map.channel = 1
+  const sofaTextureShadow = new THREE.TextureLoader().load("SofaShadow.jpg")
+  const chairTextureShadow = new THREE.TextureLoader().load("ChairShadow.jpg")
+  const tableTextureShadow = new THREE.TextureLoader().load("TableShadow.jpg")
+  const tvStandTextureShadow = new THREE.TextureLoader().load("TvStandShadow.jpg")
+  const woodWallTextureShadow = new THREE.TextureLoader().load("WoodWallShadow.jpg")
+  const frameTextureShadow = new THREE.TextureLoader().load("FrameShadow.jpg")
+  const lightTextureShadow = new THREE.TextureLoader().load("LightShadow.jpg")
 
-  return(
+  sofaTexture.flipY = false
+  chairTexture.flipY = false
+  tableTexture.flipY = false
+  tvStandTexture.flipY = false
+  woodWallTexture.flipY = false
+  frameTexture.flipY = false
+  lightTexture.flipY = false
+  sofaTextureShadow.flipY = false
+  chairTextureShadow.flipY = false
+  tableTextureShadow.flipY = false
+  tvStandTextureShadow.flipY = false
+  woodWallTextureShadow.flipY = false
+  frameTextureShadow.flipY = false
+  lightTextureShadow.flipY = false
+
+  return (
     <>
       <group scale={[1.225, 1.3, 1.5]}>
         <mesh geometry={sofa.nodes.under_part003.geometry} scale={[1.15, 1.08, 0.97]} position={[0, 0, -0.16]}>
-          <meshPhysicalMaterial side={DoubleSide} map={sofa_map}/>       
-        </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={outdoorcouch.nodes.couch.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={outdoorcouch_map}/>
+          <meshPhysicalMaterial side={DoubleSide} map={sofaTexture}/>       
         </mesh>
       </group>
       <group {...props} dispose={null} scale={[1.4, 1.4, 1.4]}>
-        <mesh geometry={chair.nodes.Leme_chair002.geometry}>
-          <meshPhysicalMaterial map={chair_map}/>
+        <mesh geometry={chair.nodes.Leme_chair001.geometry}>
+          <meshPhysicalMaterial map={chairTexture}/>
         </mesh>
-      </group>
-      <group {...props} dispose={null} scale={[1.4, 1.4, 1.4]}>
-        <mesh geometry={table.nodes.Table.geometry}>
-          <meshPhysicalMaterial map={table_map}/>
+
+         <mesh geometry={table.nodes.Table001.geometry}>
+          <meshPhysicalMaterial map={tableTexture}/>
         </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={kitchen.nodes.kitchen.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={kitchen_map}/>
+
+        <mesh geometry={tvStand.nodes.Cube001.geometry}>
+          <meshPhysicalMaterial side={DoubleSide} map={tvStandTexture}/>
         </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={fridge.nodes.Circle.geometry}>
-          <meshPhysicalMaterial map={fridge_map}/>
-        </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={tvstand.nodes.Cube001.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={tvstand_map}/>
-        </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={fence.nodes.Cube011.geometry}>
-          <meshPhysicalMaterial map={fence_map}/>
-        </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
+
         <mesh geometry={woodWall.nodes.Plane005.geometry}>
-          <meshPhysicalMaterial map={woodWall_map}/>
+          <meshPhysicalMaterial map={woodWallTexture}/>
+        </mesh>
+
+        <mesh geometry={frame.nodes.Buffet_bazalt002.geometry}>
+          <meshPhysicalMaterial side={DoubleSide} map={frameTexture}/>
+        </mesh>
+
+         <mesh geometry={light.nodes.Lights002.geometry}>
+          <meshPhysicalMaterial side={DoubleSide} map={lightTexture}/>
         </mesh>
       </group>
-      <group {...props} dispose={null} scale={1.4}>
-        <mesh geometry={frame.nodes.Buffet_bazalt001.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={frame_map}/>
+    </>
+  )
+}
+
+function Kitchen(props) {
+  const kitchen = useGLTF("kitchen.glb");
+  const fridge = useGLTF("Fridge.glb");
+
+  const kitchenTexture = new THREE.TextureLoader().load("kitchen.jpg")
+  const fridgeTexture = new THREE.TextureLoader().load("Fridge.jpg")
+  const kitchenTextureShadow = new THREE.TextureLoader().load("KitchenShadow.jpg")
+  const fridgeTextureShadow = new THREE.TextureLoader().load("FridgeShadow.jpg")
+
+  kitchenTexture.flipY = false
+  fridgeTexture.flipY = false
+  kitchenTextureShadow.flipY = false
+  fridgeTextureShadow.flipY = false
+
+  return (
+    <>
+      <group scale={1.4}>
+        <mesh geometry={kitchen.nodes.kitchen001.geometry}>
+          <meshPhysicalMaterial side={DoubleSide} map={kitchenTexture}/>
+        </mesh>
+
+        <mesh geometry={fridge.nodes.Circle001.geometry}>
+          <meshPhysicalMaterial map={fridgeTexture}/>
         </mesh>
       </group>
-      <group {...props} position={[0, -0.005, 0]} dispose={null} scale={1.4}>
-        <mesh geometry={light.nodes.Lights002.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={light_map}/>
+    </>
+  )
+}
+ 
+function Balcony(props) {
+  const outdoorCouch = useGLTF("outdoorCouch.glb");
+  const fence = useGLTF("Fence.glb");
+  const plant = useGLTF("Plants.glb");
+
+  const outdoorCouchTexture = useTexture("outdoorCouch.jpg");
+  const fenceTexture = useTexture("Fence.jpg");
+  const plantTexture = useTexture("Plants.jpg");
+
+  outdoorCouchTexture.flipY = false
+  outdoorCouchTexture.channel = 1
+  fenceTexture.flipY = false
+  fenceTexture.channel = 1
+  plantTexture.flipY = false
+  plantTexture.channel = 1
+
+  return (
+    <>
+      <group scale={1.4}>
+        <mesh geometry={outdoorCouch.nodes.couch.geometry}>
+          <meshPhysicalMaterial side={DoubleSide} map={outdoorCouchTexture}/>
         </mesh>
-      </group>
-      <group {...props} dispose={null} scale={1.4}>
+
+        <mesh geometry={fence.nodes.Cube011.geometry}>
+          <meshPhysicalMaterial map={fenceTexture}/>
+        </mesh>
+
         <mesh geometry={plant.nodes.Plane.geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={plant_map}/>
+          <meshPhysicalMaterial side={DoubleSide} map={plantTexture}/>
         </mesh>
       </group>
     </>
@@ -442,8 +465,10 @@ export default function HomeCanvas(props) {
   const linearX = useRef(0);
   const count = useRef(0);
   const animate = useRef(false);
+
   const floorShadersRef = useRef(null);
   const wallShadersRef = useRef(null);
+  const roofShadersRef = useRef(null);
   
   const sceneContext = useContext(ButtonContext);
 
@@ -479,6 +504,7 @@ export default function HomeCanvas(props) {
     if (floorShadersRef != null && wallShadersRef != null) {
       floorShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
       wallShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+      roofShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
     }
 
     if (animate.current || sceneContext.returning.current) {
@@ -556,11 +582,14 @@ export default function HomeCanvas(props) {
       </AccumulativeShadows>
 
       <Suspense fallback={null}>
-        <Roof pos={roofDisplacement}/>
+        <Roof customRoofRef={roofShadersRef}/>
         <Floor customFloorRef={floorShadersRef} />
         <Walls customWallRef={wallShadersRef} ios={"true"}/>
         <Windows />
-        <Furniture />
+
+        <Room />
+        <Kitchen/>
+        <Balcony/>
 
         <BedRoomMesh />
         <Carpet />

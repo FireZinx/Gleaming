@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return(
     <ButtonContextProvider>
-      <Canvas className={styles.three} gl={{antialias: true, stencil: false}} frameloop={"always"} dpr={2} camera={{ position: [-10, 2.3, 5], fov:75 }}>
+      <Canvas className={styles.three} gl={{antialias: true, stencil: false}} frameloop={"always"} dpr={1} camera={{ position: [-10, 2.3, 5], fov:75 }}>
         <Component />
         <PerspectiveCamera />
         {/* <CameraControls/> */}
