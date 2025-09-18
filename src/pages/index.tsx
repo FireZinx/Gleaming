@@ -1,5 +1,5 @@
 import styles from "../styles/Home.module.css";
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame, useThree, useLoader } from '@react-three/fiber'
 import { useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows} from '@react-three/drei'
 import { useEffect, Suspense, useRef, useState, forwardRef, useContext } from "react"
 import { Vector3, DoubleSide, MathUtils, PerspectiveCamera, CatmullRomCurve3, Vector4 } from "three";
@@ -44,8 +44,8 @@ function Windows(props) {
 
 function Roof(props){
   const roof = useGLTF("Roof.glb");
-  const texture = new THREE.TextureLoader().load("Roof.jpg");
-  const textureShadow = new THREE.TextureLoader().load("RoofShadow.jpg");
+  const texture = useLoader(THREE.TextureLoader, "Roof.jpg")
+  const textureShadow = useLoader(THREE.TextureLoader, "RoofShadow.jpg")
 
   texture.flipY = false
   textureShadow.flipY = false
@@ -66,8 +66,8 @@ function Roof(props){
 
 function Floor(props) {
   const floor = useGLTF("Floor.glb");
-  const texture = new THREE.TextureLoader().load("Floor.jpg");
-  const textureShadow = new THREE.TextureLoader().load("FloorShadows.jpg");
+  const texture = useLoader(THREE.TextureLoader, "Floor.jpg")
+  const textureShadow = useLoader(THREE.TextureLoader, "FloorShadows.jpg")
 
   texture.flipY = false
   textureShadow.flipY = false
@@ -102,8 +102,8 @@ function Floor(props) {
 
 function Walls(props) {
   const { nodes } = useGLTF("untitled.glb")
-  const texture = new THREE.TextureLoader().load("Walls.jpg")
-  const textureShadow = new THREE.TextureLoader().load("WallsShadow.jpg")
+  const texture = useLoader(THREE.TextureLoader, "Walls.jpg")
+  const textureShadow = useLoader(THREE.TextureLoader, "WallsShadow.jpg")
 
   //customWallRef
 
@@ -134,22 +134,23 @@ function Room(props) {
   const woodWall = useGLTF("WoodWall.glb")
   const frame = useGLTF("Frame.glb")
   const light = useGLTF("Lights.glb")
+  
+  const sofaTexture = useLoader(THREE.TextureLoader, "Sofa.jpg")
+  const chairTexture = useLoader(THREE.TextureLoader, "Chair.jpg")
+  const tableTexture = useLoader(THREE.TextureLoader, "Table.jpg")
+  const tvStandTexture = useLoader(THREE.TextureLoader, "TvStand.jpg")
+  const woodWallTexture = useLoader(THREE.TextureLoader, "WoodWall.jpg")
+  const frameTexture = useLoader(THREE.TextureLoader, "Frame.jpg")
+  const lightTexture = useLoader(THREE.TextureLoader, "Light.jpg")
 
-  const sofaTexture = new THREE.TextureLoader().load("Sofa.jpg")
-  const chairTexture = new THREE.TextureLoader().load("Chair.jpg")
-  const tableTexture = new THREE.TextureLoader().load("Table.jpg")
-  const tvStandTexture = new THREE.TextureLoader().load("TvStand.jpg")
-  const woodWallTexture = new THREE.TextureLoader().load("WoodWall.jpg")
-  const frameTexture = new THREE.TextureLoader().load("Frame.jpg")
-  const lightTexture = new THREE.TextureLoader().load("Lights.jpg")
+  //const sofaTextureShadow = useLoader(THREE.TextureLoader, "SofaShadow.jpg")
+  //const chairTextureShadow = useLoader(THREE.TextureLoader, "ChairShadow.jpg")
+  const tableTextureShadow = useLoader(THREE.TextureLoader, "TableShadow.png")
+  //const tvStandTextureShadow = useLoader(THREE.TextureLoader, "TvStandShadow.jpg")
+  //const woodWallTextureShadow = useLoader(THREE.TextureLoader, "WoodWallShadow.jpg")
+  //const frameTextureShadow = useLoader(THREE.TextureLoader, "FrameShadow.jpg")
+  //const lightTextureShadow = useLoader(THREE.TextureLoader, "LightShadow.jpg")
 
-  const sofaTextureShadow = new THREE.TextureLoader().load("SofaShadow.jpg")
-  const chairTextureShadow = new THREE.TextureLoader().load("ChairShadow.jpg")
-  const tableTextureShadow = new THREE.TextureLoader().load("TableShadow.jpg")
-  const tvStandTextureShadow = new THREE.TextureLoader().load("TvStandShadow.jpg")
-  const woodWallTextureShadow = new THREE.TextureLoader().load("WoodWallShadow.jpg")
-  const frameTextureShadow = new THREE.TextureLoader().load("FrameShadow.jpg")
-  const lightTextureShadow = new THREE.TextureLoader().load("LightShadow.jpg")
 
   sofaTexture.flipY = false
   chairTexture.flipY = false
@@ -158,13 +159,18 @@ function Room(props) {
   woodWallTexture.flipY = false
   frameTexture.flipY = false
   lightTexture.flipY = false
-  sofaTextureShadow.flipY = false
-  chairTextureShadow.flipY = false
+  //sofaTextureShadow.flipY = false
+  //chairTextureShadow.flipY = false
   tableTextureShadow.flipY = false
-  tvStandTextureShadow.flipY = false
-  woodWallTextureShadow.flipY = false
-  frameTextureShadow.flipY = false
-  lightTextureShadow.flipY = false
+  //tvStandTextureShadow.flipY = false
+  //woodWallTextureShadow.flipY = false
+  //frameTextureShadow.flipY = false
+  //lightTextureShadow.flipY = false
+
+  if (props.customTableRef.current != null && props.customTableRef.current.uniforms.ftexture.value == null) {
+    props.customTableRef.current.uniforms.ftexture.value = tableTexture;
+    props.customTableRef.current.uniforms.stexture.value = tableTextureShadow;
+  }
 
   return (
     <>
@@ -178,8 +184,8 @@ function Room(props) {
           <meshPhysicalMaterial map={chairTexture}/>
         </mesh>
 
-         <mesh geometry={table.nodes.Table001.geometry}>
-          <meshPhysicalMaterial map={tableTexture}/>
+        <mesh geometry={table.nodes.Table001.geometry}>
+          <ShadersTexture ref={props.customTableRef} />
         </mesh>
 
         <mesh geometry={tvStand.nodes.Cube001.geometry}>
@@ -469,6 +475,7 @@ export default function HomeCanvas(props) {
   const floorShadersRef = useRef(null);
   const wallShadersRef = useRef(null);
   const roofShadersRef = useRef(null);
+  const tableShadersRef = useRef(null);
   
   const sceneContext = useContext(ButtonContext);
 
@@ -505,6 +512,7 @@ export default function HomeCanvas(props) {
       floorShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
       wallShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
       roofShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+      tableShadersRef.current.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
     }
 
     if (animate.current || sceneContext.returning.current) {
@@ -543,7 +551,6 @@ export default function HomeCanvas(props) {
       camera.quaternion.normalize()
       linearX.current = normalizedX.current
     }
-    
   });
 
   return (
@@ -587,7 +594,7 @@ export default function HomeCanvas(props) {
         <Walls customWallRef={wallShadersRef} ios={"true"}/>
         <Windows />
 
-        <Room />
+        <Room customTableRef={tableShadersRef}/>
         <Kitchen/>
         <Balcony/>
 
