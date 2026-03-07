@@ -1,21 +1,26 @@
-import {useRef, useState, createContext, MutableRefObject} from "react"
+"use client"
+
+import {useRef, useState, createContext, MutableRefObject, ReactNode} from "react"
 
 type SceneContextData = {
     view: null | string;
     previousView: null | string;
-    returning: MutableRefObject<boolean>;
+    isReturning: MutableRefObject<boolean>;
+    isSignup: MutableRefObject<boolean>;
     setView: (value: string) => void;
     setPreviousView: (value: string) => void;
     setReturning: (state: boolean) => void;
+    setSignup: (state: boolean) => void;
 }
 
 export const ButtonContext = createContext({} as SceneContextData)
 
-export function ButtonContextProvider({ children }, props) {
-    const [ currentViewPos, setCurrentViewPos ] = useState(null);
-    const [ previousViewPos, setPreviousViewPos ] = useState(null);
+export function ButtonContextProvider({ children }: { children: ReactNode }) {
+    const [ currentViewPos, setCurrentViewPos ] = useState<string | null>(null);
+    const [ previousViewPos, setPreviousViewPos ] = useState<string | null>(null);
 
-    const returning = useRef(false);
+    const isReturning = useRef(false);
+    const isSignup = useRef(false);
 
     const setView = (value: string) => {
         setCurrentViewPos(value);
@@ -26,17 +31,23 @@ export function ButtonContextProvider({ children }, props) {
     }
 
     const setReturning = (state: boolean) => {
-        returning.current = state;
+        isReturning.current = state;
+    }
+
+    const setSignup = (state: boolean) => {
+        isSignup.current = state;
     }
 
     return(
         <ButtonContext.Provider value={{
             view: currentViewPos,
             previousView: previousViewPos,
-            returning,
+            isReturning,
+            isSignup,
             setView,
             setPreviousView,
-            setReturning
+            setReturning,
+            setSignup,
         }}>
             { children }
         </ButtonContext.Provider>

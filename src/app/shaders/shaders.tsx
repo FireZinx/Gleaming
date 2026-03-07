@@ -1,4 +1,7 @@
-import { extend } from '@react-three/fiber'
+"use client"
+
+import React, { Ref } from 'react'
+import { extend, ThreeElement } from '@react-three/fiber'
 import { ShaderMaterial, TextureLoader, Vector3 } from 'three'
 
 export class CustomShader extends ShaderMaterial {
@@ -45,7 +48,7 @@ export class CustomShader extends ShaderMaterial {
           
           textureMix.rgb = vec3(pow(textureMix.r, 2.2), pow(textureMix.g, 2.2), pow(textureMix.b, 2.2));
 
-          gl_FragColor = vec4(textureMix, 1.);
+          gl_FragColor = vec4(textureMix.rgb, 1.);
         }
       `
     })
@@ -58,8 +61,14 @@ declare module '@react-three/fiber' {
   }
 }
 
-export function ShadersTexture(props) {
+interface ShadersTextureProps {
+  ref?: Ref<any>
+}
+
+export function ShadersTexture(props: ShadersTextureProps) {
     extend({ CustomShader })
+
+    console.log("Shader component rendered")
   
     return(
         <customShader ref={props.ref} />
