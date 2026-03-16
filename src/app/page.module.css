@@ -119,6 +119,7 @@ a.secondary {
     font-size: 32px;
     line-height: 40px;
     letter-spacing: -1.92px;
+    font-family: poppins;
   }
 }
 
@@ -144,6 +145,11 @@ a.secondary {
   display: flex;
   height: 100%;
   width: 100%;
+}
+
+.text {
+  font-family: poppins;
+  font-size: 6rem;
 }
 
 .header{
@@ -333,26 +339,37 @@ a.secondary {
 }
 
 .signupContainer{
-  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  top: 0%;
-  z-index: 100%;
+  background-color: rgba(0, 0, 0, 0.801);
+  backdrop-filter: blur(3px);
+  
+  opacity: 0;
+  transition: opacity 1s;
   width: 100%;
   height: 100%;
+}
+.singupBoxContainer {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 2rem;
 }
 
 .signupBox1 {
   display: flex;
   position: absolute;
-  left: 40.2%;
-  top: 26.2%;
+  z-index: 1;
+  top: 0.9rem;
+  left: 0.9rem;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: rgba(100, 100, 100, 0.555);
-  backdrop-filter: blur(3px);
+  background-color: rgba(70, 70, 70, 0.6);
   border-radius: 1rem;
   width: 30rem;
   height: 40rem;
@@ -360,15 +377,97 @@ a.secondary {
 
 .signupBox2 {
   display: flex;
-  position: absolute;
-  left: 39.5%;
-  top: 27.2%;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: rgba(100, 100, 100, 0.5);
-  backdrop-filter: blur(3px);
+  background-color: rgba(70, 70, 70, 0.6);
   border-radius: 1rem;
   width: 30rem;
   height: 40rem;
+}
+
+.signupInsertContainer {
+  display: flex;
+  z-index: 2;
+  flex-direction: column ;
+  align-items: center;
+  width: 30rem;
+  height: 40rem;
+  gap: 1rem;
+}
+
+.signupText {
+  display: flex;
+  font-weight: 600;
+  letter-spacing: 0.2rem;
+  font-family: poppins;
+  font-size: 3.2rem;
+  align-items: end;
+  height: 17rem;
+  color: white;  
+}
+
+.signupinfo {
+  display: flex;
+  font-weight: 100;
+  letter-spacing: 0.2rem;
+  font-family: poppins;
+  font-size: 1.3rem;
+  align-items: center;
+  height: 10rem;
+  color: white;
+}
+
+.signupInputContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 3rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.signupEmail {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  box-sizing: border-box;
+  background-color: #2b2b2b;
+  font-family: poppins;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 0.2rem;
+  border: none;
+  border-bottom: 1px solid rgb(230 ,230 ,230);
+}
+
+.signupPassword {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  box-sizing: border-box;
+  background-color: #2b2b2b;
+  font-family: poppins;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 0.2rem;
+  border: none;
+  border-bottom: 1px solid rgb(230, 230, 230);
+}
+
+.singupButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10rem;
+  height: 3rem;
+  background-color: rgba(32, 32, 32, 0.5);
+  border-radius: 1rem;
+  font-size: 1rem;
+  font-family: poppins;
+  font-weight: 100;
+  letter-spacing: 0.1rem;
+  border: none;
 }

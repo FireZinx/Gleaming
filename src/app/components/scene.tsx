@@ -634,23 +634,6 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
     }
   });
 
-  //fecth
-  useEffect(() => {
-    const name = "Sulivan";
-    const date = "01/01/0001";
-
-    setTimeout(() => {
-      fetch(`/test?name=${name}&date=${date}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Your data is: ", data.message);
-        })
-      .catch((error) => {
-        console.error("Error fetching IP address: ", error);
-      });
-    }, 5000);
-  },[]);
-
   return (
     <>
       <Stats/>

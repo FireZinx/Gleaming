@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-static";
 
 import styles from "./page.module.css";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -7,7 +8,6 @@ import { CameraControls, Html, OrbitControls, PerspectiveCamera } from "@react-t
 import { ButtonContextProvider } from "../app/components/DataContext";
 import { Buttons } from "../app/components/Buttons";
 import Scene from "../app/components/scene";
-import { useEffect } from "react";
 
 export default function Home() {
   return (
@@ -19,8 +19,8 @@ export default function Home() {
       </Canvas>
       
       <div id={"container"} className={styles.container}>
-        <Buttons/>
         <HomeDefault/>
+        <Buttons/>
       </div>
     </ButtonContextProvider>
   );
