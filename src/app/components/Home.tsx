@@ -4,30 +4,102 @@ import { useContext, useEffect, useRef, useState } from "react"
 import styles from "../page.module.css"
 import { DefaultLoadingManager } from "three"
 import { ButtonContext } from "./DataContext" 
+import { signupSubmit, loginRequest, authenticateSession } from "../api/auth";
 
 let sceneContext: any;
 
 export default function Home() {
-    const [loaded, setLoaded] = useState(false);
-    const [remove, setRemove] = useState(false);
-    const [active, setActive] = useState(false);
+    const [ loaded, setLoaded ] = useState(false);
+    const [ remove, setRemove ] = useState(false);
+    const [ active, setActive ] = useState(false);
 
-    const signupEmailRef = useRef<HTMLInputElement>(null);
-    const signupPasswordRef = useRef<HTMLInputElement>(null);
+    const UsernameRef = useRef<HTMLInputElement>(null);
+    const EmailRef = useRef<HTMLInputElement>(null);
+    const PasswordRef = useRef<HTMLInputElement>(null);
+    const DescriptionHeader = useRef<HTMLDivElement>(null);
 
-    const SignupContainer = useRef<HTMLDivElement>(null);
+    const UserContainer = useRef<HTMLDivElement>(null);
+    const DescriptionContainer = useRef<HTMLDivElement>(null);
 
     sceneContext = useContext(ButtonContext)
 
     const loader = useRef(null);
 
     useEffect(() => {
-        if (!SignupContainer.current) return;
+        if (!UserContainer.current) return;
 
-        SignupContainer.current.style.display = "none";
-    }, [SignupContainer.current])
+        UserContainer.current.style.display = "none";
+    }, [UserContainer.current])
 
     useEffect(() => {
+        DescriptionHeader.current!.textContent = ("Welcome, " + sceneContext.username) ? `Welcome, ${sceneContext.username}` : "Welcome to Gleaming";
+    }, [sceneContext.username])
+
+    function CredentialsInterface() {
+        if (sceneContext.isCreatingUser.current) {
+            if (DescriptionContainer.current) {
+                DescriptionContainer.current.textContent = "Create Account";
+                UsernameRef.current.style.display = "flex"
+            }
+        } else {
+            if (DescriptionContainer.current) {
+                DescriptionContainer.current.textContent = "Login to your account";
+                UsernameRef.current.style.display = "none"
+            }
+        }
+        
+        if (UserContainer.current != null && !sceneContext.isCredentialsInterface) {
+            
+            UserContainer.current.style.display = "flex";
+            
+            setTimeout(() => {
+                if (!UserContainer.current) return;
+                UserContainer.current.style.opacity = "1";
+            }, 100)    
+            
+            sceneContext.setCredentialsInterface(true);
+            
+        } else if (UserContainer.current != null && sceneContext.isCredentialsInterface) {
+            console.log("signup false")
+            
+            UserContainer.current.style.opacity = "0";   
+            
+            setTimeout(() => {
+                if (!UserContainer.current) return;
+                UserContainer.current.style.display = "none";
+            }, 1000)    
+            
+            sceneContext.setCredentialsInterface(false);
+        }
+    }
+    
+    async function SubmitCredentials() {
+        const username = UsernameRef.current?.value;
+        const email = EmailRef.current?.value;
+        const password = PasswordRef.current?.value;
+        
+        if (sceneContext.isCreatingUser.current) { 
+            const data = await signupSubmit(email!, password!, username!); 
+
+        } else { 
+            const data = await loginRequest(email!, password!); 
+            
+            console.log(data)
+            sceneContext.setUsername(data.username);
+        }
+    }
+    
+    async function CheckAuth() {
+        const data = await authenticateSession();
+
+        if (data.status == 200) {
+            sceneContext.setUsername(data.username);
+        } else {
+            sceneContext.setUsername("user");
+        }
+    }
+
+    useEffect(() => {  
         DefaultLoadingManager.onLoad = () => {
             setTimeout(() => {
                 setLoaded(true)
@@ -39,78 +111,31 @@ export default function Home() {
                 setActive(true)
             }, 8000) 
         }
+
+        CheckAuth();
     }, [])
 
-    function SignupInterface() {
-        console.log(sceneContext.isSignup.current)
-
-        if (SignupContainer.current != null && !sceneContext.isSignup.current) {
-            
-            SignupContainer.current.style.display = "flex";
-
-            setTimeout(() => {
-                if (!SignupContainer.current) return;
-                SignupContainer.current.style.opacity = "1";
-            }, 100)    
-            
-            sceneContext.setView(null);
-            sceneContext.setSignup(true);
-
-        } else if (SignupContainer.current != null && sceneContext.isSignup.current) {
-            console.log("signup false")
-
-            SignupContainer.current.style.opacity = "0";   
-
-            setTimeout(() => {
-                if (!SignupContainer.current) return;
-                SignupContainer.current.style.display = "none";
-            }, 1000)    
-            
-            sceneContext.setSignup(false);
-            sceneContext.setView("apartment");
-        }
-    }
-
-    function SubmitSignup() {
-        const email = signupEmailRef.current?.value;
-        const password = signupPasswordRef.current?.value;
-
-        fetch(`/api/signupsubmit?email=${email}&password=${password}`)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            if (data) {
-                console.log("Signup successful: ", data);
-            } else {
-                console.error("Signup failed");
-            }
-        })
-    }
-
-    function LoginInterface() {
-        
-    }
-
     return(
-    <>
-        <div ref={SignupContainer} className={styles.signupContainer}>
+        <>
+        <div ref={UserContainer} className={styles.signupContainer}>
             <div className={styles.signupInsertContainer}>
                 <div className={styles.signupText}>
-                    GLEAMING
+                    GLEAMING     
                 </div>
 
-                <div className={styles.signupinfo}>
+                <div ref={DescriptionContainer} className={styles.signupinfo}>
                     Create Account
                 </div>
 
                 <div className={styles.signupInputContainer}>
-                    <input ref={signupEmailRef} placeholder="Email" className={styles.signupEmail}/>
-                    <input ref={signupPasswordRef} placeholder="Password" className={styles.signupPassword}/>
+                    <input ref={UsernameRef} type="text" placeholder="Username" className={styles.signupEmail}/>
+                    <input ref={EmailRef} type="text" placeholder="Email" className={styles.signupEmail}/>
+                    <input ref={PasswordRef} type="password" placeholder="Password" className={styles.signupPassword}/>
 
                     <button className={styles.singupButton} onClick={() => {
-                        SubmitSignup();
+                        SubmitCredentials();
                     }}>
-                        Submit
+                        Confirm
                     </button>
                 </div>   
             </div>
@@ -121,21 +146,21 @@ export default function Home() {
         </div>
 
         <header className={styles.header}>
-            <div className={styles.headerText}>
-                GLEAMING
-            </div>
+            <div ref={DescriptionHeader} className={styles.headerText}/>
                 
             <div className={styles.headerContainer}>
                 <div 
                 onClick={() => {
-                   SignupInterface();
+                    sceneContext.setCreatingUser(true);
+                    CredentialsInterface();
                 }}
                 className={styles.headerButton}>
                     Sign-up  
                 </div>
                 <div 
                 onClick={() => {
-                   LoginInterface();
+                    sceneContext.setCreatingUser(false);
+                    CredentialsInterface();
                 }}
                 className={styles.headerButton}>
                     Login

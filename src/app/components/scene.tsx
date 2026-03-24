@@ -358,7 +358,6 @@ function Rays(){
       <Sun ref={set}/>
       { material && (
         <EffectComposer enableNormalPass multisampling={1}>
-          <SMAA />
           <GodRays sun={material} samples={50} exposure={1.2} />
           
           <Bloom
@@ -529,6 +528,8 @@ const camRoutes = {
 export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   const { camera } = useThree();
 
+  const [ view, setView ] = useState<null | string>(null);
+
   const interpolation = useRef(0);
   const normalizedX = useRef(0);;
   const linearX = useRef(0);
@@ -550,18 +551,12 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
 
   useEffect(() => {
     window.addEventListener("mousemove", (event) => {
-      //linear scaling 
-      if (sceneContext.view == null) {
-        return
-      }
-
       normalizedX.current = (6 * event.clientX) / window.innerWidth - 3
     })
 
     if (isFirstRender.current == false){
       setTimeout(() => {
-          sceneContext.setView("apartment");
-          sceneContext.setPreviousView("apartment");
+          setView("apartment");
           isFirstRender.current = true;
       }, 7000)
     }
@@ -571,36 +566,43 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
     } else {
       animate.current = true;
     }
-  }, [sceneContext.view]) 
+  }, [view]) 
+
+  useEffect(() => {
+    console.log ("credentials")
+    if (sceneContext.isCredentialsInterface) {
+      setView("signup");
+    } else {
+      setView("apartment")
+    }
+  }, [sceneContext.isCredentialsInterface])
 
   useFrame(( state, delta ) => {
-    if (sceneContext.view == null) {
+    if (view == null) {
       return
     }
 
-    if (floorShadersRef != null && wallShadersRef != null) {
+    /*if (floorShadersRef != null && wallShadersRef != null) {
       setTimeout(() => {
-        floorShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        wallShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        roofShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+        const t = Math.sin(state.clock.getElapsedTime() * 0.5) * 30;
+
+        floorShadersRef.current!.uniforms.time.value = t;
+        wallShadersRef.current!.uniforms.time.value = t;
+        roofShadersRef.current!.uniforms.time.value = t;
   
-        sofaShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        chairShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        tvStandShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        woodWallShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        frameShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        lightShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
-        tableShadersRef.current!.uniforms.time.value = Math.sin(state.clock.elapsedTime * 0.5) * 30
+        sofaShadersRef.current!.uniforms.time.value = t;
+        chairShadersRef.current!.uniforms.time.value = t;
+        tvStandShadersRef.current!.uniforms.time.value = t;
+        woodWallShadersRef.current!.uniforms.time.value = t;
+        frameShadersRef.current!.uniforms.time.value = t;
+        lightShadersRef.current!.uniforms.time.value = t;
+        tableShadersRef.current!.uniforms.time.value = t;
       }, 200)
-    }
+    }*/
 
     if (animate.current || sceneContext.isReturning.current) {
-      if (sceneContext.view != "signup" ) {
-        interpolation.current += delta * cam2[sceneContext.view as keyof typeof cam2].velocity
-        
-        if (interpolation.current > 1) { 
-          interpolation.current = 1
-        }
+      if (view != "signup" ) {
+        interpolation.current += delta * cam2[view as keyof typeof cam2].velocity
 
         let interpolationOffset = MathUtils.smootherstep(interpolation.current, 0, 1)
 
@@ -608,18 +610,18 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
           interpolationOffset = 1 - interpolationOffset;
         }
 
-        let dest = cam2[sceneContext.view as keyof typeof cam2].curve.getPointAt(interpolationOffset)
-        let lookAtDest = cam2[sceneContext.view as keyof typeof cam2].look.getPointAt(interpolationOffset);
-
+        let dest = cam2[view as keyof typeof cam2].curve.getPointAt(interpolationOffset)
+        let lookAtDest = cam2[view as keyof typeof cam2].look.getPointAt(interpolationOffset);
+      
         camera.position.set(dest.x, dest.y, dest.z)
         camera.lookAt(lookAtDest)
         linearX.current = 0
 
-        if (interpolation.current == 1) {
+        if (interpolation.current > 1) {
           interpolation.current = 0;
-
+          
           if (sceneContext.isReturning.current) {
-            sceneContext.setView(camRoutes[sceneContext.view as keyof typeof camRoutes].previousPos)
+            setView(camRoutes[view as keyof typeof camRoutes].previousPos)
           }
 
           animate.current = false;
@@ -639,27 +641,27 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
       <Stats/>
       <Rays/>
 
-      <ViewPos onClick={() => {sceneContext.setView("room"); sceneContext.setPreviousView("apartment");}} visible={sceneContext.view == "apartment"}  position={[-0.5, 1.3, 5]}> 
+      <ViewPos onClick={() => {setView("room");}} visible={view == "apartment"}  position={[-0.5, 1.3, 5]}> 
         Apartment view
       </ViewPos>
 
-      <ViewPos onClick={() => {sceneContext.setView("corridor"); sceneContext.setPreviousView("room");}} visible={sceneContext.view == "room"}  rotation={[0, Math.PI/2, 0]} position={[3.2, 1, 1.8]}> 
+      <ViewPos onClick={() => {setView("corridor");}} visible={view == "room"}  rotation={[0, Math.PI/2, 0]} position={[3.2, 1, 1.8]}> 
         Rooms
       </ViewPos>
 
-      <ViewPos onClick={() => {sceneContext.setView("kitchen"); sceneContext.setPreviousView("room");}} visible={sceneContext.view == "room"} degress={180} rotation={[0, Math.PI * 0.8, 0]} position={[3.2, 1, 5.5]}> 
+      <ViewPos onClick={() => {setView("kitchen");}} visible={view == "room"} degress={180} rotation={[0, Math.PI * 0.8, 0]} position={[3.2, 1, 5.5]}> 
         Kitchen
       </ViewPos>
 
-      <ViewPos onClick={() => {sceneContext.setView("bedroom"); sceneContext.setPreviousView("corridor");}} visible={sceneContext.view == "corridor"} degress={270} rotation={[0, 5*Math.PI/6, 0]} position={[2.4, 1.3, 0.8]}> 
+      <ViewPos onClick={() => {setView("bedroom");}} visible={view == "corridor"} degress={270} rotation={[0, 5*Math.PI/6, 0]} position={[2.4, 1.3, 0.8]}> 
         Bedroom
       </ViewPos>
 
-      <ViewPos onClick={() => {sceneContext.setView("masterbedroom"); sceneContext.setPreviousView("corridor");}} visible={sceneContext.view == "corridor"} degress={270} rotation={[0, Math.PI/4, 0]} position={[4.3, 1.55, 0.7]}> 
+      <ViewPos onClick={() => {setView("masterbedroom");}} visible={view == "corridor"} degress={270} rotation={[0, Math.PI/4, 0]} position={[4.3, 1.55, 0.7]}> 
         Master Bedroom
       </ViewPos>
 
-      <ViewPos onClick={() => {sceneContext.setView("bathroom"); sceneContext.setPreviousView("corridor");}} visible={sceneContext.view == "corridor"} rotation={[0, Math.PI/2, 0]} position={[3.25, 1.3, 0.3]}> 
+      <ViewPos onClick={() => {setView("bathroom");}} visible={view == "corridor"} rotation={[0, Math.PI/2, 0]} position={[3.25, 1.3, 0.3]}> 
         Bathroom
       </ViewPos>
 

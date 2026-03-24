@@ -4,10 +4,12 @@ export const dynamic = "force-static";
 import styles from "./page.module.css";
 import { Canvas, useFrame } from "@react-three/fiber";
 import HomeDefault from "../app/components/Home"
+import { useContext, useEffect } from "react"
 import { CameraControls, Html, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { ButtonContextProvider } from "../app/components/DataContext";
+import {ButtonContextProvider } from "../app/components/DataContext";
 import { Buttons } from "../app/components/Buttons";
 import Scene from "../app/components/scene";
+
 
 export default function Home() {
   return (
@@ -25,3 +27,4 @@ export default function Home() {
     </ButtonContextProvider>
   );
 }
+

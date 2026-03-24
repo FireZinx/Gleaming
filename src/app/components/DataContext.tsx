@@ -3,51 +3,53 @@
 import {useRef, useState, createContext, MutableRefObject, ReactNode} from "react"
 
 type SceneContextData = {
-    view: null | string;
-    previousView: null | string;
+    username: null | string;
     isReturning: MutableRefObject<boolean>;
-    isSignup: MutableRefObject<boolean>;
-    setView: (value: string) => void;
-    setPreviousView: (value: string) => void;
+    isCredentialsInterface: boolean;
+    isCreatingUser: MutableRefObject<boolean>;
+
+    setUsername: (value: string) => void;
     setReturning: (state: boolean) => void;
-    setSignup: (state: boolean) => void;
+    setCredentialsInterface: (state: boolean) => void;
+    setCreatingUser: (state: boolean) => void;
 }
 
 export const ButtonContext = createContext({} as SceneContextData)
 
 export function ButtonContextProvider({ children }: { children: ReactNode }) {
-    const [ currentViewPos, setCurrentViewPos ] = useState<string | null>(null);
-    const [ previousViewPos, setPreviousViewPos ] = useState<string | null>(null);
+    const [ username, setUserName ] = useState<string | null>(null);
+    const [isCredentialsInterface, setIsCredentialsInterface] = useState<boolean>(false);
+
 
     const isReturning = useRef(false);
-    const isSignup = useRef(false);
+    const isCreatingUser  = useRef(false);
 
-    const setView = (value: string) => {
-        setCurrentViewPos(value);
-    }
-
-    const setPreviousView = (value: string) => {
-        setPreviousViewPos(value);
+    const setUsername = (value: string) => {
+        setUserName(value);
     }
 
     const setReturning = (state: boolean) => {
         isReturning.current = state;
     }
 
-    const setSignup = (state: boolean) => {
-        isSignup.current = state;
+    const setCredentialsInterface = (state: boolean) => {
+       setIsCredentialsInterface(state);
+    }
+
+    const setCreatingUser = (state: boolean) => {
+        isCreatingUser.current = state;
     }
 
     return(
         <ButtonContext.Provider value={{
-            view: currentViewPos,
-            previousView: previousViewPos,
+            username,
             isReturning,
-            isSignup,
-            setView,
-            setPreviousView,
+            isCredentialsInterface,
+            isCreatingUser,
+            setUsername,
             setReturning,
-            setSignup,
+            setCredentialsInterface,
+            setCreatingUser,
         }}>
             { children }
         </ButtonContext.Provider>
