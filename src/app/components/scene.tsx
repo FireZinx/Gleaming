@@ -2,344 +2,14 @@
 
 import styles from "../page.module.css"
 import { useFrame, useThree, useLoader } from '@react-three/fiber'
-import { useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows} from '@react-three/drei'
+import { useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows, useKTX2} from '@react-three/drei'
 import { useEffect, Suspense, useRef, useState, forwardRef, useContext, MutableRefObject, JSX } from "react"
 import { Vector3, DoubleSide, MathUtils, CatmullRomCurve3 } from "three";
 import { Bloom, EffectComposer, GodRays, SMAA } from "@react-three/postprocessing";
 import { KernelSize, Pass, Resolution } from "postprocessing" 
 import { ButtonContext } from "../components/DataContext";
-import { ShadersTexture } from "../shaders/shaders"
-import BedRoomMesh  from "../models/bedrooms"
-import Carpet from"../models/carpet"
+import { BedRoomMesh, Carpet, Floor, Walls, Roof, Kitchen, Room, Balcony, Windows} from "../models";
 import * as THREE from 'three'
-
-function Windows() {
-  const Window = useGLTF("Window.glb")
-  const Glass = useGLTF("glass.glb")
-  const glassLightmap = useTexture("glass.jpg")
-  const texture = useTexture("Window.jpg")
-
-  texture.flipY = false
-  texture.channel = 1
-
-  glassLightmap.flipY = false
-  glassLightmap.channel = 1
-
-  return(
-    <group dispose={null}>
-      <group position={[0, 0.01, -0.027]} scale={[1.4, 1.4, 1.408]}>
-        <mesh  geometry={(Window.nodes.Cube005 as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial map={texture} side={DoubleSide}/>
-        </mesh>
-      </group>
-
-      <group>
-        <mesh  geometry={(Glass.nodes.Plane006 as THREE.Mesh).geometry} position={[-0.26, 0.12, 4.024]} scale={[1.4, 1.1, 1.1]} rotation={[0, -  Math.PI/2,Math.PI / 2]}>
-          <MeshTransmissionMaterial thickness={0.01}  resolution={1024} ior={1.25} roughness={0.09} transmission={0.95} clearcoat={1} clearcoatRoughness={0} transparent={false}/>
-        </mesh>
-      </group>
-    </group>
-  )
-}
-
-type RoofProps = JSX.IntrinsicElements["group"] & {
-  customRoofRef: React.RefObject<THREE.ShaderMaterial | null>;
-  pos?: React.Ref<THREE.Group>;
-};
-
-function Roof(props: RoofProps){
-  const roof = useGLTF("Roof.glb");
-  const texture = useLoader(THREE.TextureLoader, "Roof.jpg")
-  const textureShadow = useLoader(THREE.TextureLoader, "RoofShadow.jpg")
-
-  texture.flipY = false
-  textureShadow.flipY = false
-
-  useEffect(() => {
-    if (props.customRoofRef.current != null && props.customRoofRef.current.uniforms.ftexture.value == null) {
-      props.customRoofRef.current.uniforms.ftexture.value = texture;
-      props.customRoofRef.current.uniforms.stexture.value = textureShadow;
-    }
-  }, [texture, textureShadow, props.customRoofRef])
-
-  return(
-    <group {...props} ref={props.pos} scale={1.4}>
-      <mesh geometry={(roof.nodes.Plane010 as THREE.Mesh).geometry}>
-        <ShadersTexture ref={props.customRoofRef} />
-      </mesh> 
-    </group>
-  )
-}
-
-type FloorProps = JSX.IntrinsicElements["group"] & {
-  customFloorRef: React.RefObject<THREE.ShaderMaterial | null>;
-};
-
-function Floor(props: FloorProps) {
-  const floor = useGLTF("Floor.glb");
-  const texture = useLoader(THREE.TextureLoader, "Floor.jpg")
-  const textureShadow = useLoader(THREE.TextureLoader, "FloorShadows.jpg")
-
-  texture.flipY = false
-  textureShadow.flipY = false
-  
-   useEffect(() => {
-      if (props.customFloorRef.current != null && props.customFloorRef.current.uniforms.ftexture.value == null) {
-        props.customFloorRef.current.uniforms.ftexture.value = texture;
-        props.customFloorRef.current.uniforms.stexture.value = textureShadow;
-      }
-  }, [texture, textureShadow, props.customFloorRef])
-  
-  return (
-    <group {...props} position={[0, 0.1954, 0]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
-      <mesh geometry={(floor.nodes.Plane003 as THREE.Mesh).geometry}>
-        <ShadersTexture ref={props.customFloorRef} />
-      </mesh>
-
-      <mesh position={[0, 0, 0.00005]} geometry={(floor.nodes.Plane003 as THREE.Mesh).geometry}>
-        <MeshReflectorMaterial
-          side={DoubleSide}
-          blur={[1600, 800]}
-          resolution={512}
-          mirror={1}
-          mixBlur={0.8}
-          mixStrength={0.5}
-          transparent={true}
-          opacity={0.2}
-          color={[0.1, 0.1, 0.1]}
-        />
-      </mesh>
-    </group>
-  )
-}
-
-type WallsProps = JSX.IntrinsicElements["group"] & {
-  customWallRef: React.RefObject<THREE.ShaderMaterial | null>;
-}
-
-function Walls(props: WallsProps) {
-  const { nodes } = useGLTF("untitled.glb")
-  const texture = useLoader(THREE.TextureLoader, "Walls.jpg")
-  const textureShadow = useLoader(THREE.TextureLoader, "WallsShadow.jpg")
-
-  //customWallRef
-
-  texture.flipY = false
-  textureShadow.flipY = false
-
-  useEffect(() => {
-    if (props.customWallRef.current != null && props.customWallRef.current.uniforms.ftexture.value == null) {
-      props.customWallRef.current.uniforms.ftexture.value = texture;
-      props.customWallRef.current.uniforms.stexture.value = textureShadow;
-    }
-  },[texture, textureShadow, props.customWallRef])
-  
-  return (
-    <>
-      <group {...props} scale={[1.4, 1.4, 1.4]}>
-        <mesh geometry={(nodes.Plane002 as THREE.Mesh).geometry} >
-          <ShadersTexture ref={props.customWallRef} />
-        </mesh>
-      </group>
-    </>
-  )
-}
-
-type RoomProps = JSX.IntrinsicElements["group"] &  {
-  customTableRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customSofaRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customChairRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customtvStandRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customtvWoodWallRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customtvFrameRef: React.RefObject<THREE.ShaderMaterial | null>;
-  customtvLightRef: React.RefObject<THREE.ShaderMaterial | null>;
-}
-
-function Room(props: RoomProps) {
-  const sofa = useGLTF("Sofa.glb")
-  const chair = useGLTF("Chair.glb")
-  const table = useGLTF("Table.glb")
-  const tvStand = useGLTF("tvstand.glb")
-  const woodWall = useGLTF("woodWall.glb")
-  const frame = useGLTF("Frame.glb")
-  const light = useGLTF("Lights.glb")
-  
-  const sofaTexture = useLoader(THREE.TextureLoader, "Sofa.jpg")
-  const chairTexture = useLoader(THREE.TextureLoader, "Chair.jpg")
-  const tableTexture = useLoader(THREE.TextureLoader, "Table.jpg")
-  const tvStandTexture = useLoader(THREE.TextureLoader, "TvStand.jpg")
-  const woodWallTexture = useLoader(THREE.TextureLoader, "WoodWall.jpg")
-  const frameTexture = useLoader(THREE.TextureLoader, "Frame.jpg")
-  const lightTexture = useLoader(THREE.TextureLoader, "Light.jpg")
-
-  const sofaTextureShadow = useLoader(THREE.TextureLoader, "sofaShadow.jpg")
-  const chairTextureShadow = useLoader(THREE.TextureLoader, "ChairShadow.jpg")
-  const tableTextureShadow = useLoader(THREE.TextureLoader, "TableShadow.png")
-  const tvStandTextureShadow = useLoader(THREE.TextureLoader, "TvStandShadow.jpg")
-  const woodWallTextureShadow = useLoader(THREE.TextureLoader, "WoodWallShadow.jpg")
-  const frameTextureShadow = useLoader(THREE.TextureLoader, "FrameShadow.jpg")
-  const lightTextureShadow = useLoader(THREE.TextureLoader, "LightShadow.jpg")
-
-  sofaTexture.flipY = false
-  chairTexture.flipY = false
-  tableTexture.flipY = false
-  tvStandTexture.flipY = false
-  woodWallTexture.flipY = false
-  frameTexture.flipY = false
-  lightTexture.flipY = false
-  sofaTextureShadow.flipY = false
-  chairTextureShadow.flipY = false
-  tableTextureShadow.flipY = false
-  tvStandTextureShadow.flipY = false
-  woodWallTextureShadow.flipY = false
-  frameTextureShadow.flipY = false
-  lightTextureShadow.flipY = false
-
-  useEffect(() => {
-    if (!props.customTableRef.current) return;
-    if (!props.customSofaRef.current) return;
-    if (!props.customChairRef.current) return;
-    if (!props.customtvStandRef.current) return;
-    if (!props.customtvWoodWallRef.current) return;
-    if (!props.customtvFrameRef.current) return;
-    if (!props.customtvLightRef.current) return;
-
-    props.customTableRef.current.uniforms.ftexture.value = tableTexture;
-    props.customTableRef.current.uniforms.stexture.value = tableTextureShadow;
-
-    props.customSofaRef.current.uniforms.ftexture.value = sofaTexture;
-    props.customSofaRef.current.uniforms.stexture.value = sofaTextureShadow;
-
-    props.customChairRef.current.uniforms.ftexture.value = chairTexture;
-    props.customChairRef.current.uniforms.stexture.value = chairTextureShadow;
-    
-    props.customtvStandRef.current.uniforms.ftexture.value = tvStandTexture;
-    props.customtvStandRef.current.uniforms.stexture.value = tvStandTextureShadow;
-    
-    props.customtvWoodWallRef.current.uniforms.ftexture.value = woodWallTexture;
-    props.customtvWoodWallRef.current.uniforms.stexture.value = woodWallTextureShadow;
-    
-    props.customtvFrameRef.current.uniforms.ftexture.value = frameTexture;
-    props.customtvFrameRef.current.uniforms.stexture.value = frameTextureShadow;
-
-    props.customtvLightRef.current.uniforms.ftexture.value = lightTexture;
-    props.customtvLightRef.current.uniforms.stexture.value = lightTextureShadow;
-    
-  }, [sofaTexture, sofaTextureShadow, chairTexture, chairTextureShadow, tableTexture, tableTextureShadow, tvStandTexture, tvStandTextureShadow, woodWallTexture, woodWallTextureShadow, frameTexture, frameTextureShadow, lightTexture, lightTextureShadow, props.customTableRef, props.customSofaRef, props.customChairRef, props.customtvStandRef, props.customtvWoodWallRef, props.customtvFrameRef, props.customtvLightRef])
-
-  return (
-    <>
-      <group scale={[1.225, 1.3, 1.5]}>
-        <mesh geometry={(sofa.nodes.under_part003 as THREE.Mesh).geometry} scale={[1.15, 1.08, 0.97]} position={[0, 0, -0.16]}>
-          <ShadersTexture ref={props.customSofaRef} />   
-        </mesh>
-      </group>
-
-      <group {...props} dispose={null} scale={[1.4, 1.4, 1.4]}>
-        <mesh geometry={(chair.nodes.Leme_chair001 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customChairRef} />
-        </mesh>
-
-        <mesh geometry={(table.nodes.Table001 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customTableRef} />
-        </mesh>
-
-        <mesh geometry={(tvStand.nodes.Cube001 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customtvStandRef} />
-        </mesh>
-
-        <mesh geometry={(woodWall.nodes.Plane005 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customtvWoodWallRef} />
-        </mesh>
-
-        <mesh geometry={(frame.nodes.Buffet_bazalt002 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customtvFrameRef} />
-        </mesh>
-
-         <mesh geometry={(light.nodes.Lights002 as THREE.Mesh).geometry}>
-          <ShadersTexture ref={props.customtvLightRef} />
-        </mesh>
-      </group>
-    </>
-  )
-}
-
-type kitchenProps = JSX.IntrinsicElements["group"] & {
-  customKitchenRef: React.RefObject<THREE.ShaderMaterial>;
-  customFridgeRef: React.RefObject<THREE.ShaderMaterial>;
-}
-
-function Kitchen(props: kitchenProps) {
-  const kitchen = useGLTF("kitchen.glb");
-  const fridge = useGLTF("Fridge.glb");
-
-  const kitchenTexture = useLoader(THREE.TextureLoader,"kitchen.jpg")
-  const fridgeTexture =  useLoader(THREE.TextureLoader,"Fridge.jpg")
-  const kitchenTextureShadow =  useLoader(THREE.TextureLoader,"KitchenShadow.jpg")
-  const fridgeTextureShadow =  useLoader(THREE.TextureLoader,"FridgeShadow.jpg")
-
-  kitchenTexture.flipY = false
-  fridgeTexture.flipY = false
-  kitchenTextureShadow.flipY = false
-  fridgeTextureShadow.flipY = false
-
-  return (
-    <>
-      <group scale={1.4}>
-        <mesh geometry={(kitchen.nodes.kitchen001 as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={kitchenTexture}/>
-        </mesh>
-
-        <mesh geometry={(fridge.nodes.Circle001 as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial map={fridgeTexture}/>
-        </mesh>
-      </group>
-    </>
-  )
-}
-
-function Balcony() {
-  const outdoorCouch = useGLTF("outdoorCouch.glb");
-  const fence = useGLTF("Fence.glb");
-  const plant = useGLTF("plants.glb");
-
-  const outdoorCouchTexture = useTexture("outdoorCouch.jpg");
-  const fenceTexture = useTexture("Fence.jpg");
-  const plantTexture = useTexture("Plants.jpg");
-
-  outdoorCouchTexture.flipY = false
-  outdoorCouchTexture.channel = 1
-  fenceTexture.flipY = false
-  fenceTexture.channel = 1
-  plantTexture.flipY = false
-  plantTexture.channel = 1
-
-  return (
-    <>
-      <group scale={1.4}>
-        <mesh geometry={(outdoorCouch.nodes.couch as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={outdoorCouchTexture}/>
-        </mesh>
-
-        <mesh geometry={(fence.nodes.Cube011 as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial map={fenceTexture}/>
-        </mesh>
-
-        <mesh geometry={(plant.nodes.Plane as THREE.Mesh).geometry}>
-          <meshPhysicalMaterial side={DoubleSide} map={plantTexture}/>
-        </mesh>
-      </group>
-    </>
-  )
-}
-
-function Sky() {
-  return(
-    <>
-      <color attach="background" args={["#BEDCF5"]}/>
-    </>
-  )
-}
 
 const Sun = forwardRef((props, forwardRef) => {
   return (
@@ -358,7 +28,6 @@ function Rays(){
       <Sun ref={set}/>
       { material && (
         <EffectComposer enableNormalPass multisampling={1}>
-          <GodRays sun={material} samples={50} exposure={1.2} />
           
           <Bloom
             intensity={1}
@@ -384,7 +53,7 @@ type ViewPosProps = JSX.IntrinsicElements["group"] & {
 function ViewPos(props: ViewPosProps){
   return(
     <mesh {...props}>
-      <Html scale={0.1} transform rotation={[ 0, -Math.PI/2, 0]}>
+      <Html scale={0.2} transform rotation={[ 0, -Math.PI/2, 0]}>
         <div data-show={props.visible} onClick={() => {props.onClick()}} className={styles.infoContainer}>
           <span>
             {props.children}
@@ -571,9 +240,9 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   useEffect(() => {
     console.log ("credentials")
     if (sceneContext.isCredentialsInterface) {
-      setView("signup");
+      //setView("signup");
     } else {
-      setView("apartment")
+      //setView("apartment")
     }
   }, [sceneContext.isCredentialsInterface])
 
@@ -686,13 +355,13 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
           customtvFrameRef={frameShadersRef}
           customtvLightRef={lightShadersRef}
         />
-        
+        <Kitchen customKitchenRef={undefined} customFridgeRef={undefined} />
         <Balcony/>
 
         <BedRoomMesh />
         <Carpet /> 
 
-        <Sky/>
+        <color attach="background" args={["#BEDCF5"]}/>
       </Suspense>
     </>
   );

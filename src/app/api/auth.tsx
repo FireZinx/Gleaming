@@ -5,7 +5,7 @@ type AuthResponse = {
 };
 
 export const authenticateSession = async (): Promise<AuthResponse> => {
-    const res = await fetch(`http://192.168.15.3:5000/api/authsession`, {
+    const res = await fetch(`/api/authsession`, {
         method: "POST",
         credentials: "include"
     })
@@ -15,7 +15,7 @@ export const authenticateSession = async (): Promise<AuthResponse> => {
 }
 
 export const signupSubmit = async (email: string, password: string, username: string) => {
-    const res = await fetch(`http://192.168.15.3:5000/api/signupsubmit`, {
+    const res = await fetch(`/api/signupsubmit`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -28,7 +28,7 @@ export const signupSubmit = async (email: string, password: string, username: st
 }
 
 export const loginRequest = async (email: string, password: string) => {
-    const res = await fetch(`http://192.168.15.3:5000/api/requestlogin`, {
+    const res = await fetch(`/api/requestlogin`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -38,6 +38,5 @@ export const loginRequest = async (email: string, password: string) => {
     })
 
     const data = await res.json()
-    console.log(data)
     return data
 }

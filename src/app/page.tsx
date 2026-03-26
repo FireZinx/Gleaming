@@ -14,7 +14,7 @@ import Scene from "../app/components/scene";
 export default function Home() {
   return (
     <ButtonContextProvider>
-      <Canvas className={styles.three} gl={{antialias: false, stencil: false}} frameloop={"always"} dpr={1} camera={{ position: [-10, 2.3, 5], fov:75 }}>
+      <Canvas className={styles.three} gl={{antialias: false, stencil: false}} frameloop={"always"} dpr={1.5} camera={{ position: [-10, 2.3, 5], fov:75 }}>
         <PerspectiveCamera />
         <Scene/>
         {/* <CameraControls/> */}

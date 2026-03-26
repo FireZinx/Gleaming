@@ -39,12 +39,12 @@ export default function Home() {
         if (sceneContext.isCreatingUser.current) {
             if (DescriptionContainer.current) {
                 DescriptionContainer.current.textContent = "Create Account";
-                UsernameRef.current.style.display = "flex"
+                UsernameRef.current!.style.display = "flex"
             }
         } else {
             if (DescriptionContainer.current) {
                 DescriptionContainer.current.textContent = "Login to your account";
-                UsernameRef.current.style.display = "none"
+                UsernameRef.current!.style.display = "none"
             }
         }
         
