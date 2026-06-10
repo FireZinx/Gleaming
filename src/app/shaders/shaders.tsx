@@ -67,9 +67,7 @@ interface ShadersTextureProps {
 
 export function ShadersTexture(props: ShadersTextureProps) {
     extend({ CustomShader })
-
-    console.log("Shader component rendered")
-  
+    
     return(
         <customShader ref={props.ref} />
     )

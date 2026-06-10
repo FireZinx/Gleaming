@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'></link>
+        <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet"></link>
         {children}
       </body>
     </html>
