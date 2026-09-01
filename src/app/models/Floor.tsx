@@ -27,7 +27,7 @@ export default function Floor(props: FloorProps) {
   }, [texture, /*textureShadow*/ props.customFloorRef])
   
   return (
-    <group {...props} position={[0, 0.1954, 0]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
+    <group {...props} position={[0.012, 0.1954, 0.005]} scale={1.4} rotation={[Math.PI/2, Math.PI, Math.PI]}>
       <mesh geometry={(floor.nodes.Plane003 as THREE.Mesh).geometry}>
         <ShadersTexture ref={props.customFloorRef} />
       </mesh>

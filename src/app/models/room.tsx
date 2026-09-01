@@ -115,7 +115,7 @@ export default function Room(props: RoomProps) {
           <ShadersTexture ref={props.customtvFrameRef} />
         </mesh>
 
-         <mesh geometry={(light.nodes.Lights002 as THREE.Mesh).geometry}>
+         <mesh position={[0, 0, 0]} scale={1} rotation={[0, 0, Math.PI]} geometry={(light.nodes.Lights001 as THREE.Mesh).geometry}>
           <ShadersTexture ref={props.customtvLightRef} />
         </mesh>
       </group>

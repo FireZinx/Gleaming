@@ -7,8 +7,8 @@ import { JSX } from "react"
 import { DoubleSide } from "three";
 
 type kitchenProps = JSX.IntrinsicElements["group"] & {
-  customKitchenRef: React.RefObject<THREE.ShaderMaterial>;
-  customFridgeRef: React.RefObject<THREE.ShaderMaterial>;
+  customKitchenRef: React.RefObject<THREE.ShaderMaterial | null>;
+  customFridgeRef: React.RefObject<THREE.ShaderMaterial | null>;
 }
 
 export default function Kitchen(props: kitchenProps) {

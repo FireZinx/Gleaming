@@ -7,10 +7,12 @@ from pydantic import BaseModel
 import uvicorn
 import secrets
 
+//test
+
 class postgres_database:
     def __init__(self):
        self.pool = ConnectionPool(
-            "postgresql://postgres:admin@localhost:5432/postgres", 
+            "postgresql://postgres:2008@localhost:5432/postgres", 
             max_size=10
        ) 
 
@@ -113,4 +115,4 @@ class FastAPiEndpoints:
             return pending_user
 
 if __name__ == "__main__":
-    uvicorn.run(FastAPiEndpoints().app, host="192.168.15.3", port=5000)
+    uvicorn.run(FastAPiEndpoints().app, host="192.168.15.3", port=5001)

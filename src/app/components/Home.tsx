@@ -1,7 +1,7 @@
 "use client"
 
-import { useContext, useEffect, useRef, useState } from "react"
 import styles from "../page.module.css"
+import { useContext, useEffect, useRef, useState } from "react"
 import { DefaultLoadingManager } from "three"
 import { ButtonContext } from "./DataContext" 
 import { signupSubmit, loginRequest, authenticateSession } from "../api/auth";

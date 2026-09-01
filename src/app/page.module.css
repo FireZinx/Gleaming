@@ -472,3 +472,29 @@ a.secondary {
   letter-spacing: 0.1rem;
   border: none;
 }
+
+.alertWidgetcontainer {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: start;
+  flex-direction: column;
+
+  padding-top:2rem;
+  right: 4.5rem;
+  top: 4.5rem;
+  background-color: rgba(0, 0, 0, 0.521);
+  backdrop-filter: blur(1rem);
+  border-radius: 2rem;
+  
+  opacity: 0;
+  transition: opacity 1s;
+  width: 28rem;
+  height: 15rem;
+}
+
+.alertWidgetcontainer{
+  font-family: Geologica;
+  font-size: 1.4rem;
+  font-weight: 200;
+}

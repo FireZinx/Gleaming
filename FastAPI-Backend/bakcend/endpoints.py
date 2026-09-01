@@ -9,10 +9,8 @@ import secrets
 app = FastAPI()
 
 origins = [
-    "http://localhost:4000",
-    "http://192.168.15.3:4000",
-    "http://127.0.0.1:4000",
-    "http://192.168.15.144:4000"
+    "http://localhost:3000",
+    "http://192.168.15.3:3000",
 ]
 
 app.add_middleware(
@@ -90,7 +88,7 @@ async def login_fetch(login_request: LoginRequest, response: Response, request: 
             session_pending = database.store_user_session(email, password, session_id)
 
             if session_pending["status"] == 200:
-                response.set_cookie(key="session_id", value=session_id, httponly=True, secure=False, samesite="None")
+                response.set_cookie(key="session_id", value=session_id, httponly=True, secure=False, samesite="lax")
                 
             return {"status": 200, "username": pending_user["username"]}
         else:

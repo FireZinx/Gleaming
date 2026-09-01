@@ -1,14 +1,15 @@
 "use client"
 
 import styles from "../page.module.css"
-import { useFrame, useThree, useLoader } from '@react-three/fiber'
-import { useGLTF, RandomizedLight, Stats, useTexture, MeshTransmissionMaterial, MeshReflectorMaterial, Html, AccumulativeShadows, useKTX2} from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
+import  {RandomizedLight, Stats, Html, AccumulativeShadows } from '@react-three/drei'
 import { useEffect, Suspense, useRef, useState, forwardRef, useContext, MutableRefObject, JSX } from "react"
-import { Vector3, DoubleSide, MathUtils, CatmullRomCurve3 } from "three";
+import { Vector3, MathUtils, CatmullRomCurve3 } from "three";
 import { Bloom, EffectComposer, GodRays, SMAA } from "@react-three/postprocessing";
-import { KernelSize, Pass, Resolution } from "postprocessing" 
+import { KernelSize, Resolution } from "postprocessing" 
 import { ButtonContext } from "../components/DataContext";
 import { BedRoomMesh, Carpet, Floor, Walls, Roof, Kitchen, Room, Balcony, Windows} from "../models";
+import { CamRoute } from "../camera/routes";
 import * as THREE from 'three'
 
 const Sun = forwardRef((props, forwardRef) => {
@@ -53,7 +54,7 @@ type ViewPosProps = JSX.IntrinsicElements["group"] & {
 function ViewPos(props: ViewPosProps){
   return(
     <mesh {...props}>
-      <Html scale={0.2} transform rotation={[ 0, -Math.PI/2, 0]}>
+      <Html scale={0.06} transform rotation={[ 0, -Math.PI/2, 0]}>
         <div data-show={props.visible} onClick={() => {props.onClick()}} className={styles.infoContainer}>
           <span>
             {props.children}
@@ -65,134 +66,6 @@ function ViewPos(props: ViewPosProps){
   )
 }
 
-const cam = {
-  dimension: {position: new Vector3(3.5, 12, 3.8), look: new Vector3(3.5, 0, 3.7), velocity: 0.4},
-  apartment: {position: new Vector3(-5.5, 2.2, 5), look: new Vector3(10, 0.8, 5), velocity: 0.4},
-  room: {position: new Vector3(5.5, 2.2, 7.25), look: new Vector3(0, 1.1, 1), velocity: 0.4},
-  kitchen:{position:new Vector3(4, 2.2, 6.5), look: new Vector3(0, 1.3, 9), velocity: 0.4},
-  corridor: {position: new Vector3(3.2, 2.2, 2.8), look: new Vector3(3.5, 1.3, -2), velocity: 0.4},
-  bedroom: {position: new Vector3(1, 2.2, 1.3), look: new Vector3(-2, 1.3, -1), velocity: 0.4},
-  masterbedroom: {position: new Vector3(6.5, 2.2, 0.3), look: new Vector3(8, 1.3, 2), velocity: 0.4},
-  bathroom: {position: new Vector3(2.8, 2.2, -1.5), look: new Vector3(5, 1.3, 0), velocity: 0.4}
-}
-
-const cam2 = {
-  apartment: {
-    curve: new CatmullRomCurve3([
-      new Vector3(-10, 2.3, 5),
-      new Vector3(-5.5, 2.2, 5)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(-10, 10, 5),
-      new Vector3(10, 0.8, 5)
-    ]),
-    velocity: 0.2
-  },
-  room: {
-    curve: new CatmullRomCurve3([
-      new Vector3(-5.5, 2.2, 5),
-      new Vector3(2, 2.2, 5.5),
-      new Vector3(5.5, 2.2, 7.25)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(10, 0.8, 5),
-      new Vector3(0, 1.1, 1),
-    ]),
-    velocity: 0.2
-  },
-  kitchen: {
-    curve: new CatmullRomCurve3([
-      new Vector3(5.5, 2.2, 7.25),
-      new Vector3(5, 2.2, 6.8 ),
-      new Vector3(4, 2.2, 6.5)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(0, 1.1, 1),
-      new Vector3(0, 1.3, 9),
-    ]),
-    velocity: 0.4
-  },
-  corridor: {
-    curve: new CatmullRomCurve3([
-      new Vector3(5.5, 2.2, 7.25),
-      new Vector3(4, 2.2, 4.5 ),
-      new Vector3(3.2, 2.2, 2.8)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(0, 1.1, 1),
-      new Vector3(3.5, 1.3, -2),
-    ]),
-    velocity: 0.25
-  },
-  bedroom: {
-    curve: new CatmullRomCurve3([
-      new Vector3(3.2, 2.2, 2.8),
-      new Vector3(3, 2.2, 1.1 ),
-      new Vector3(2, 2.2, 1.1),
-      new Vector3(2, 2.2, 0.6)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(3.5, 1.3, -2),
-      new Vector3(-1, 1.1, -1),
-    ]),
-    velocity: 0.25
-  },
-  masterbedroom: {
-    curve: new CatmullRomCurve3([
-      new Vector3(3.2, 2.2, 2.8),
-      new Vector3(3.1, 2.2, 0.7 ),
-      new Vector3(6.5, 2.2, 0.3)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(3.5, 1.3, -2),
-      new Vector3(8, 1.3, 2),
-    ]),
-    velocity: 0.25
-  },
-  bathroom: {
-    curve: new CatmullRomCurve3([
-      new Vector3(3.2, 2.2, 2.8),
-      new Vector3(2.95, 2.2, 0.7 ),
-      new Vector3(2.8, 2.2, -1.5)
-    ]),
-    look: new CatmullRomCurve3([
-      new Vector3(3.5, 1.3, -2),
-      new Vector3(5, 1.3, 0),
-    ]),
-    velocity: 0.25
-  }
-}
-
-const camRoutes = {
-  apartment: {
-    previousPos: "apartment",
-    nextPos: ["room"]
-  },
-  room: {
-    previousPos: "apartment",
-    nextPos: ["kitchen", "corridor"]
-  },
-  kitchen: {
-    previousPos: "room",
-    nextPos: []
-  },
-  corridor: {
-    previousPos: "room",
-    nextPos: ["bedroom", "masterbedroom", "bathroom"]
-  },
-  bedroom: {
-    previousPos: "corridor",
-    nextPos: []
-  },
-  masterbedroom: {
-    previousPos: "corridor",
-    nextPos: []
-  },
-  bathroom: {
-    previousPos: "corridor",
-    nextPos: []
-  }
-}
 
 export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   const { camera } = useThree();
@@ -215,6 +88,8 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   const woodWallShadersRef = useRef<THREE.ShaderMaterial | null>(null);
   const frameShadersRef = useRef<THREE.ShaderMaterial | null>(null);
   const lightShadersRef = useRef<THREE.ShaderMaterial | null>(null);
+  const kitchenShadersRef = useRef<THREE.ShaderMaterial | null>(null);
+  const fridgeShadersRef = useRef<THREE.ShaderMaterial | null>(null);
   
   const sceneContext = useContext(ButtonContext);
 
@@ -227,23 +102,17 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
       setTimeout(() => {
           setView("apartment");
           isFirstRender.current = true;
+
       }, 7000)
     }
     
-    if (sceneContext.isReturning.current) {
-      sceneContext.setReturning(false);
-    } else {
-      animate.current = true;
-    }
+    if (sceneContext.isReturning.current) sceneContext.setReturning(false); else animate.current = true;
+
   }, [view]) 
 
   useEffect(() => {
-    console.log ("credentials")
-    if (sceneContext.isCredentialsInterface) {
-      //setView("signup");
-    } else {
-      //setView("apartment")
-    }
+    if (sceneContext.isCredentialsInterface) setView("signup"); else setView("apartment");
+
   }, [sceneContext.isCredentialsInterface])
 
   useFrame(( state, delta ) => {
@@ -271,16 +140,14 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
 
     if (animate.current || sceneContext.isReturning.current) {
       if (view != "signup" ) {
-        interpolation.current += delta * cam2[view as keyof typeof cam2].velocity
+        interpolation.current += delta * CamRoute[view as keyof typeof CamRoute].velocity
 
         let interpolationOffset = MathUtils.smootherstep(interpolation.current, 0, 1)
 
-        if (sceneContext.isReturning.current) {
-          interpolationOffset = 1 - interpolationOffset;
-        }
+        if (sceneContext.isReturning.current) interpolationOffset = 1 - interpolationOffset;
 
-        let dest = cam2[view as keyof typeof cam2].curve.getPointAt(interpolationOffset)
-        let lookAtDest = cam2[view as keyof typeof cam2].look.getPointAt(interpolationOffset);
+        let dest = CamRoute[view as keyof typeof CamRoute].curve.getPointAt(interpolationOffset)
+        let lookAtDest = CamRoute[view as keyof typeof CamRoute].look.getPointAt(interpolationOffset);
       
         camera.position.set(dest.x, dest.y, dest.z)
         camera.lookAt(lookAtDest)
@@ -289,9 +156,7 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
         if (interpolation.current > 1) {
           interpolation.current = 0;
           
-          if (sceneContext.isReturning.current) {
-            setView(camRoutes[view as keyof typeof camRoutes].previousPos)
-          }
+          if (sceneContext.isReturning.current) setView(CamRoute[view as keyof typeof CamRoute].previousPos);
 
           animate.current = false;
         }
@@ -299,9 +164,12 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
     } else {
       const resultX = normalizedX.current - linearX.current
       const QN = new THREE.Quaternion(0, -resultX, 0, 20)
+
       camera.applyQuaternion(QN)
       camera.quaternion.normalize()
+
       linearX.current = normalizedX.current
+
     }
   });
 
@@ -355,7 +223,7 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
           customtvFrameRef={frameShadersRef}
           customtvLightRef={lightShadersRef}
         />
-        <Kitchen customKitchenRef={undefined} customFridgeRef={undefined} />
+        <Kitchen customKitchenRef={kitchenShadersRef} customFridgeRef={fridgeShadersRef} />
         <Balcony/>
 
         <BedRoomMesh />

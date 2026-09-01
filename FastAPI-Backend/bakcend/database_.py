@@ -67,3 +67,14 @@ class postgres_database:
                     database_email, database_password, username = cur.fetchone()
                     if database_email == email and database_password == password:
                         return {"status" : 200, "username": username}
+
+    def get_user_role_by_session(self, session_id: str):
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur: 
+                cur.execute("SELECT user_role FROM users_session WHERE user_session_id = %s", (session_id,))
+                
+                if cur.rowcount == 0:
+                    return {"status": 400, "error_message": "Invalid session"}
+                
+                else:
+                    return {"status": 200, "user_role": cur.fetchone()[0]}
