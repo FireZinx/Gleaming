@@ -3,6 +3,8 @@
 <td width="50%">
 
 </td>
+<img src="https://github.com/FireZinx/Gleaming/blob/main/Image-Sample.png" width="70%">
+
 <td width="50%" valign="top">
 
 <h2>Gleaming</h2>
@@ -12,7 +14,6 @@ Gleaming is an interactive 3D apartment experience built with
 Next.js, React Three Fiber and Three.js.
 </p>
 
-<img src="./Image-Sample" width="70%">
 
 <p>
 The project allows users to explore an apartment and move between
