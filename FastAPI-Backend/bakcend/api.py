@@ -74,7 +74,6 @@ class FastAPiEndpoints:
         
         self.origins = [
             "http://localhost:3000",
-            "http://192.168.15.3:3000",
             "http://127.0.0.1:3000"
         ]
 
@@ -115,4 +114,4 @@ class FastAPiEndpoints:
             return pending_user
 
 if __name__ == "__main__":
-    uvicorn.run(FastAPiEndpoints().app, host="192.168.15.3", port=5001)
+    uvicorn.run(FastAPiEndpoints().app, host="192.168.0.0", port=5001)
