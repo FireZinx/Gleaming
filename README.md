@@ -3,9 +3,10 @@
 <td width="50%">
 
 </td>
-<img src="https://github.com/FireZinx/Gleaming/blob/main/Image-Sample.png" width="70%">
 
 <td width="50%" valign="top">
+  
+<img src="https://github.com/FireZinx/Gleaming/blob/main/Image-Sample.png" width="70%">
 
 <h2>Gleaming</h2>
 
