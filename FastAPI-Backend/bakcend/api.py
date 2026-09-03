@@ -12,7 +12,7 @@ import secrets
 class postgres_database:
     def __init__(self):
        self.pool = ConnectionPool(
-            "postgresql://postgres:2008@localhost:5432/postgres", 
+            "postgresql://postgres:admin@localhost:5432/postgres", 
             max_size=10
        ) 
 
