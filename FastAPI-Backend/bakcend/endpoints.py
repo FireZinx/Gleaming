@@ -10,7 +10,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "http://192.168.15.3:3000",
+    "http://192.168.0.0:3000",
 ]
 
 app.add_middleware(
@@ -97,4 +97,4 @@ async def login_fetch(login_request: LoginRequest, response: Response, request: 
         return {"status": 400, "error_message": "User is already logged in"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.15.3", port=5000,  proxy_headers=True, forwarded_allow_ips="*")
+    uvicorn.run(app, host="192.168.0.0", port=5000,  proxy_headers=True, forwarded_allow_ips="*")
