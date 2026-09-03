@@ -1,26 +1,7 @@
-<table>
-<tr>
-<td width="50%">
+# Gleaming 
 
-</td>
+Gleaming is an interactive 3D apartment experience built with Next.js, React Three Fiber, and Three.js. 
 
-<td width="50%" valign="top">
-  
-<img src="https://github.com/FireZinx/Gleaming/blob/main/Image-Sample.png" width="70%">
+<img src="./Image-Sample.png" alt="Gleaming apartment preview" width="600">
 
-<h2>Gleaming</h2>
-
-<p>
-Gleaming is an interactive 3D apartment experience built with
-Next.js, React Three Fiber and Three.js.
-</p>
-
-
-<p>
-The project allows users to explore an apartment and move between
-the living room and bathroom through smooth, animated camera transitions.
-</p>
-
-</td>
-</tr>
-</table>
+The project allows users to explore an apartment and move between the living room, kitchen, bedrooms, and bathroom through smooth, animated camera transitions.
