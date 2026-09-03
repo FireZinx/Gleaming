@@ -50,4 +50,4 @@ async def websocket_endpoint(websocket: WebSocket):
         pass
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.15.3", port=5001,  proxy_headers=True, forwarded_allow_ips="*")
+    uvicorn.run(app, host="192.168.0.0", port=5001,  proxy_headers=True, forwarded_allow_ips="*")
