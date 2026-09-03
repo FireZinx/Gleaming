@@ -3,7 +3,7 @@ from psycopg_pool import ConnectionPool
 class postgres_database:
     def __init__(self):
        self.pool = ConnectionPool(
-            "postgresql://postgres:2008@localhost:5432/usersinformation", 
+            "postgresql://postgres:admin@localhost:5432/usersinformation", 
             max_size=10
        ) 
     
