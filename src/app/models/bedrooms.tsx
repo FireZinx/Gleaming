@@ -17,7 +17,7 @@ export default function BedRoomMesh () {
     const decorationTexture = useTexture("Decoration.jpg")
 
     bedroomTexture.flipY = false
-    bedroomTexture.channel = 1
+    bedroomTexture.channel = 0
     masterTextute.flipY = false
     masterTextute.channel = 1
     pillowTexture.flipY = false

@@ -12,22 +12,11 @@ import { BedRoomMesh, Carpet, Floor, Walls, Roof, Kitchen, Room, Balcony, Window
 import { CamRoute } from "../camera/routes";
 import * as THREE from 'three'
 
-const Sun = forwardRef((props, forwardRef) => {
-  return (
-    <mesh ref={forwardRef} position={[-20, 4, 0]} scale={[1, 1, 1]} >
-      <sphereGeometry />
-      <meshBasicMaterial/>
-    </mesh>
-  );
-})
-
 function Rays(){
-  const [material, set] = useState() 
 
   return(
     <>
-      <Sun ref={set}/>
-      { material && (
+      {(
         <EffectComposer enableNormalPass multisampling={1}>
           
           <Bloom
@@ -74,7 +63,8 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
 
   const interpolation = useRef(0);
   const normalizedX = useRef(0);;
-  const linearX = useRef(0);
+  const normalizedY = useRef(0);
+  const baseQuaternion = useRef(new THREE.Quaternion());
   const animate = useRef(false);
   const isFirstRender = useRef(false);
 
@@ -96,6 +86,7 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   useEffect(() => {
     window.addEventListener("mousemove", (event) => {
       normalizedX.current = (6 * event.clientX) / window.innerWidth - 3
+      normalizedY.current = (6 * event.clientY) / window.innerHeight - 3
     })
 
     if (isFirstRender.current == false){
@@ -111,7 +102,7 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
   }, [view]) 
 
   useEffect(() => {
-    if (sceneContext.isCredentialsInterface) setView("signup"); else setView("apartment");
+    //if (sceneContext.isCredentialsInterface) setView("signup"); else setView("apartment");
 
   }, [sceneContext.isCredentialsInterface])
 
@@ -151,7 +142,7 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
       
         camera.position.set(dest.x, dest.y, dest.z)
         camera.lookAt(lookAtDest)
-        linearX.current = 0
+        baseQuaternion.current.copy(camera.quaternion)
 
         if (interpolation.current > 1) {
           interpolation.current = 0;
@@ -162,13 +153,12 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
         }
       }
     } else {
-      const resultX = normalizedX.current - linearX.current
-      const QN = new THREE.Quaternion(0, -resultX, 0, 20)
+      const yawOffset = MathUtils.clamp(normalizedX.current * 0.1, -0.3, 0.3)
+      const pitchOffset = MathUtils.clamp(normalizedY.current * 0.1, -0.3, 0.3)
 
-      camera.applyQuaternion(QN)
-      camera.quaternion.normalize()
-
-      linearX.current = normalizedX.current
+      camera.quaternion.copy(baseQuaternion.current)
+      camera.rotateY(-yawOffset)
+      camera.rotateX(-pitchOffset)
 
     }
   });

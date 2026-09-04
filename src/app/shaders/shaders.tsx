@@ -2,11 +2,14 @@
 
 import React, { Ref } from 'react'
 import { extend, ThreeElement } from '@react-three/fiber'
-import { ShaderMaterial, TextureLoader, Vector3 } from 'three'
+import { DoubleSide, ShaderMaterial, TextureLoader, Vector3 } from 'three'
 
 export class CustomShader extends ShaderMaterial {
   constructor() {
     super({
+      side: DoubleSide,
+      depthWrite: true,
+      depthTest: true,
       uniforms: {
         ftexture: { value: null },
         stexture: { value: null },
