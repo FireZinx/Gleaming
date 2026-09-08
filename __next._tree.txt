@@ -2,4 +2,4 @@
 :HL["/Gleaming/_next/static/css/a2a80a2f359be07c.css","style"]
 :HL["https://fonts.googleapis.com/css?family=Poppins","style"]
 :HL["https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"9B0yPIQ5T9XY5OHBlvpiA"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"wx5gloXx0kNhJsQYE1CQL"}
