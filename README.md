@@ -6,4 +6,6 @@ It also includes a Python API built with FastAPI, PostgreSQL for data storage, a
 
 The project integrates a 3D frontend with a full-stack backend, providing authentication, session management, and real-time functionality. Users can explore a fully modeled apartment and navigate between the living room, kitchen, bedrooms, and bathroom through smooth, animated camera transitions.
 
+This project is availabe to view on https://firezinx.github.io/Gleaming/
+
 <img src="./Image-Sample.png" alt="Gleaming apartment preview" width="600">
