@@ -5,7 +5,7 @@ console.log("NEXT CONFIG LOADED");
 const nextConfig: NextConfig = {
   reactCompiler: true,
   allowedDevOrigins: [
-    "http://192.168.15.3:3000",
+    "http://192.168.0.0:3000",
     "http://localhost:3000",
   ],
 };
