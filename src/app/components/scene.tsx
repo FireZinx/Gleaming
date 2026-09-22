@@ -165,7 +165,6 @@ export default function HomeCanvas(props: React.PropsWithChildren<any>) {
 
   return (
     <>
-      <Stats/>
       <Rays/>
 
       <ViewPos onClick={() => {setView("room");}} visible={view == "apartment"}  position={[-0.5, 1.3, 5]}> 
