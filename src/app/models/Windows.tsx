@@ -4,13 +4,14 @@ import * as THREE from 'three'
 import { useGLTF,  MeshTransmissionMaterial} from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { DoubleSide } from "three";
+import { assetUrl } from '../assetUrl'
 
 
 export default function Windows() {
-  const Window = useGLTF("Window.glb") as any;
-  const Glass = useGLTF("glass.glb") as any;
-  const glassLightmap = useLoader(THREE.TextureLoader, "glass.jpg")
-  const texture = useLoader(THREE.TextureLoader, "Window.jpg")
+  const Window = useGLTF(assetUrl("Window.glb")) as any;
+  const Glass = useGLTF(assetUrl("glass.glb")) as any;
+  const glassLightmap = useLoader(THREE.TextureLoader, assetUrl("glass.jpg"))
+  const texture = useLoader(THREE.TextureLoader, assetUrl("Window.jpg"))
 
   texture.flipY = false
   texture.channel = 0
@@ -28,7 +29,7 @@ export default function Windows() {
 
       <group>
         <mesh  geometry={Glass.nodes.Plane006.geometry} position={[-0.26, 0.12, 4.024]} scale={[1.4, 1.1, 1.1]} rotation={[0, -  Math.PI/2,Math.PI / 2]}>
-          <MeshTransmissionMaterial thickness={0.01}  resolution={1024} ior={1.25} roughness={0.09} transmission={0.95} clearcoat={1} clearcoatRoughness={0} transparent={false}/>
+          <MeshTransmissionMaterial thickness={0.01} samples={1} resolution={4096} ior={1.25} roughness={0.09} transmission={0.95} clearcoat={1} clearcoatRoughness={0} transparent={false}/>
         </mesh>
       </group>
     </group>

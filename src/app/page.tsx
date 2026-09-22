@@ -9,7 +9,6 @@ import { Buttons } from "../app/components/Buttons";
 
 import HomeDefault from "../app/components/Home"
 import Scene from "../app/components/scene";
-import AlertWidget from "../app/components/AlertWidget";
 
 
 export default function Home() {
@@ -24,7 +23,6 @@ export default function Home() {
       <div id={"container"} className={styles.container}>
         <HomeDefault/>
         <Buttons/>
-        <AlertWidget/>
       </div>
     </ButtonContextProvider>
   );

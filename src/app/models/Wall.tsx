@@ -5,14 +5,15 @@ import { useGLTF } from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { useEffect, JSX } from "react"
 import { ShadersTexture } from "../shaders/shaders"
+import { assetUrl } from '../assetUrl'
 
 type WallsProps = JSX.IntrinsicElements["group"] & {
   customWallRef: React.RefObject<THREE.ShaderMaterial | null>;
 }
 
 export default function Walls(props: WallsProps) {
-  const { nodes } = useGLTF("untitled.glb")
-  const texture = useLoader(THREE.TextureLoader, "Walls.jpg")
+  const { nodes } = useGLTF(assetUrl("untitled.glb"))
+  const texture = useLoader(THREE.TextureLoader, assetUrl("Walls.jpg"))
   //const textureShadow = useLoader(THREE.TextureLoader, "WallsShadow.jpg")
 
   //customWallRef

@@ -8,6 +8,9 @@ app = FastAPI()
 
 connections = {}
 
+async def disconnect():
+    return await websocket.close(code=1008, reason="Unauthorized")
+
 @app.websocket("/ws/alert")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -15,14 +18,12 @@ async def websocket_endpoint(websocket: WebSocket):
     session_id = websocket.cookies.get("session_id")
 
     if not session_id:
-        await websocket.close(code=1008, reason="Unauthorized")
-        return
+        return await disconnect()
 
     role = postgres_database().get_user_role_by_session(session_id)
 
     if not role:
-        await websocket.close(code=1008, reason="Unauthorized")
-        return
+        return await disconnect()
 
     connections[session_id] = {"websocket": websocket, "user_role": role.get("user_role")}
 

@@ -5,6 +5,7 @@ import { useGLTF } from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { useEffect, JSX } from "react"
 import { ShadersTexture } from "../shaders/shaders"
+import { assetUrl } from '../assetUrl'
 
 type RoofProps = JSX.IntrinsicElements["group"] & {
   customRoofRef: React.RefObject<THREE.ShaderMaterial | null>;
@@ -12,8 +13,8 @@ type RoofProps = JSX.IntrinsicElements["group"] & {
 };
 
 export default function Roof(props: RoofProps){
-  const roof = useGLTF("Roof.glb");
-  const texture = useLoader(THREE.TextureLoader, "Roof.jpg")
+  const roof = useGLTF(assetUrl("Roof.glb"));
+  const texture = useLoader(THREE.TextureLoader, assetUrl("Roof.jpg"))
   //const textureShadow = useLoader(THREE.TextureLoader, "RoofShadow.jpg")
 
   texture.flipY = false

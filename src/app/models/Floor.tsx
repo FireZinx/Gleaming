@@ -6,14 +6,15 @@ import { useEffect, JSX } from "react"
 import { ShadersTexture } from "../shaders/shaders"
 import { useGLTF, MeshReflectorMaterial } from '@react-three/drei'
 import { DoubleSide } from "three";
+import { assetUrl } from '../assetUrl'
 
 type FloorProps = JSX.IntrinsicElements["group"] & {
   customFloorRef: React.RefObject<THREE.ShaderMaterial | null>;
 };
 
 export default function Floor(props: FloorProps) {
-  const floor = useGLTF("Floor.glb");
-  const texture = useLoader(THREE.TextureLoader, "Floor.jpg")
+  const floor = useGLTF(assetUrl("Floor.glb"));
+  const texture = useLoader(THREE.TextureLoader, assetUrl("Floor.jpg"))
   //const textureShadow = useLoader(THREE.TextureLoader, "FloorShadows.jpg")
 
   texture.flipY = false

@@ -5,6 +5,7 @@ import { useGLTF } from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { JSX } from "react"
 import { DoubleSide } from "three";
+import { assetUrl } from '../assetUrl'
 
 type kitchenProps = JSX.IntrinsicElements["group"] & {
   customKitchenRef: React.RefObject<THREE.ShaderMaterial | null>;
@@ -12,11 +13,11 @@ type kitchenProps = JSX.IntrinsicElements["group"] & {
 }
 
 export default function Kitchen(props: kitchenProps) {
-  const kitchen = useGLTF("kitchen.glb");
-  const fridge = useGLTF("Fridge.glb");
+  const kitchen = useGLTF(assetUrl("kitchen.glb"));
+  const fridge = useGLTF(assetUrl("Fridge.glb"));
 
-  const kitchenTexture = useLoader(THREE.TextureLoader,"kitchen.jpg")
-  const fridgeTexture =  useLoader(THREE.TextureLoader,"Fridge.jpg")
+  const kitchenTexture = useLoader(THREE.TextureLoader, assetUrl("kitchen.jpg"))
+  const fridgeTexture =  useLoader(THREE.TextureLoader, assetUrl("fridge.jpg"))
   /*const kitchenTextureShadow =  useLoader(THREE.TextureLoader,"KitchenShadow.jpg")
   const fridgeTextureShadow =  useLoader(THREE.TextureLoader,"FridgeShadow.jpg")*/
 

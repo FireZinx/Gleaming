@@ -2,19 +2,20 @@
 
 import * as THREE from 'three'
 import { useGLTF, useTexture } from '@react-three/drei'
+import { assetUrl } from '../assetUrl'
 
 export default function BedRoomMesh () {
-    const bedroom = useGLTF("bedroom.glb");
-    const masterBedRoom = useGLTF("masterbedroom.glb")
-    const pillow = useGLTF("pillow.glb")
-    const decoration = useGLTF("decorationRoom.glb")
-    const decorationRoom = useGLTF("decoration.glb")
+    const bedroom = useGLTF(assetUrl("bedroom.glb"));
+    const masterBedRoom = useGLTF(assetUrl("masterbedroom.glb"))
+    const pillow = useGLTF(assetUrl("pillow.glb"))
+    const decoration = useGLTF(assetUrl("decorationRoom.glb"))
+    const decorationRoom = useGLTF(assetUrl("decoration.glb"))
 
-    const bedroomTexture = useTexture("bedRoom.jpg")
-    const masterTextute = useTexture("masterBedRoom.jpg")
-    const pillowTexture = useTexture("Pillow.jpg")
-    const decorationRoomTexture = useTexture("decorationRoom.jpg")
-    const decorationTexture = useTexture("Decoration.jpg")
+    const bedroomTexture = useTexture(assetUrl("bedRoom.jpg"))
+    const masterTextute = useTexture(assetUrl("masterBedRoom.jpg"))
+    const pillowTexture = useTexture(assetUrl("Pillow.jpg"))
+    const decorationRoomTexture = useTexture(assetUrl("decorationRoom.jpg"))
+    const decorationTexture = useTexture(assetUrl("Decoration.jpg"))
 
     bedroomTexture.flipY = false
     bedroomTexture.channel = 0

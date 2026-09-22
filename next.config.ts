@@ -3,11 +3,21 @@ import type { NextConfig } from "next";
 console.log("NEXT CONFIG LOADED");
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
-  allowedDevOrigins: [
-    "http://192.168.15.3:3000",
-    "http://localhost:3000",
-  ],
+   reactCompiler: true,
+
+  output: "export",
+
+  basePath: "/Gleaming",
+  assetPrefix: "/Gleaming/",
+  trailingSlash: true,
+
+  env: {
+    NEXT_PUBLIC_BASE_PATH: "/Gleaming",
+  },
+
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

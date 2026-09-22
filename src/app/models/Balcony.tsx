@@ -4,15 +4,16 @@ import * as THREE from 'three'
 import { useGLTF,  MeshTransmissionMaterial} from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { DoubleSide } from "three";
+import { assetUrl } from '../assetUrl'
 
 export default function Balcony() {
-  const outdoorCouch = useGLTF("outdoorCouch.glb");
-  const fence = useGLTF("Fence.glb");
-  const plant = useGLTF("plants.glb");
+  const outdoorCouch = useGLTF(assetUrl("outdoorCouch.glb"));
+  const fence = useGLTF(assetUrl("Fence.glb"));
+  const plant = useGLTF(assetUrl("plants.glb"));
 
-  const outdoorCouchTexture = useLoader(THREE.TextureLoader, "outdoorCouch.jpg")
-  const fenceTexture = useLoader(THREE.TextureLoader, "Fence.jpg");
-  const plantTexture = useLoader(THREE.TextureLoader, "Plants.jpg");
+  const outdoorCouchTexture = useLoader(THREE.TextureLoader, assetUrl("outdoorCouch.jpg"))
+  const fenceTexture = useLoader(THREE.TextureLoader, assetUrl("Fence.jpg"));
+  const plantTexture = useLoader(THREE.TextureLoader, assetUrl("Plants.jpg"));
 
   outdoorCouchTexture.flipY = false
   outdoorCouchTexture.channel = 1

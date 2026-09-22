@@ -3,6 +3,7 @@ import { useGLTF } from '@react-three/drei'
 import { useLoader } from '@react-three/fiber'
 import { useEffect, JSX } from "react"
 import { ShadersTexture } from "../shaders/shaders"
+import { assetUrl } from '../assetUrl'
 
 type RoomProps = JSX.IntrinsicElements["group"] &  {
   customTableRef: React.RefObject<THREE.ShaderMaterial | null>;
@@ -15,21 +16,21 @@ type RoomProps = JSX.IntrinsicElements["group"] &  {
 }
 
 export default function Room(props: RoomProps) {
-  const sofa = useGLTF("Sofa.glb")
-  const chair = useGLTF("Chair.glb")
-  const table = useGLTF("Table.glb")
-  const tvStand = useGLTF("tvstand.glb")
-  const woodWall = useGLTF("woodWall.glb")
-  const frame = useGLTF("Frame.glb")
-  const light = useGLTF("Lights.glb")
+  const sofa = useGLTF(assetUrl("Sofa.glb"))
+  const chair = useGLTF(assetUrl("Chair.glb"))
+  const table = useGLTF(assetUrl("Table.glb"))
+  const tvStand = useGLTF(assetUrl("tvstand.glb"))
+  const woodWall = useGLTF(assetUrl("woodWall.glb"))
+  const frame = useGLTF(assetUrl("Frame.glb"))
+  const light = useGLTF(assetUrl("Lights.glb"))
   
-  const sofaTexture = useLoader(THREE.TextureLoader, "Sofa.jpg")
-  const chairTexture = useLoader(THREE.TextureLoader, "Chair.jpg")
-  const tableTexture = useLoader(THREE.TextureLoader, "Table.jpg")
-  const tvStandTexture = useLoader(THREE.TextureLoader, "TvStand.jpg")
-  const woodWallTexture = useLoader(THREE.TextureLoader, "WoodWall.jpg")
-  const frameTexture = useLoader(THREE.TextureLoader, "Frame.jpg")
-  const lightTexture = useLoader(THREE.TextureLoader, "Light.jpg")
+  const sofaTexture = useLoader(THREE.TextureLoader, assetUrl("Sofa.jpg"))
+  const chairTexture = useLoader(THREE.TextureLoader, assetUrl("Chair.jpg"))
+  const tableTexture = useLoader(THREE.TextureLoader, assetUrl("Table.jpg"))
+  const tvStandTexture = useLoader(THREE.TextureLoader, assetUrl("TvStand.jpg"))
+  const woodWallTexture = useLoader(THREE.TextureLoader, assetUrl("WoodWall.jpg"))
+  const frameTexture = useLoader(THREE.TextureLoader, assetUrl("Frame.jpg"))
+  const lightTexture = useLoader(THREE.TextureLoader, assetUrl("Light.jpg"))
 
   /*const sofaTextureShadow = useLoader(THREE.TextureLoader, "sofaShadow.jpg")
   const chairTextureShadow = useLoader(THREE.TextureLoader, "ChairShadow.jpg")

@@ -2,10 +2,11 @@
 
 import * as THREE from 'three'
 import { useGLTF, useTexture } from '@react-three/drei'
+import { assetUrl } from '../assetUrl'
 
 export default function Carpet() {
-    const carpet = useGLTF("carpet.glb")
-    const texture = useTexture("Carpet.jpg")
+    const carpet = useGLTF(assetUrl("carpet.glb"))
+    const texture = useTexture(assetUrl("Carpet.jpg"))
 
     texture.flipY = false
     texture.channel = 1
